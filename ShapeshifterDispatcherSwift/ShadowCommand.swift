@@ -26,9 +26,13 @@ extension Command
         
         func run() throws
         {
+            #if canImport(WASILibc)
+            // Logger is already setup
+            #else
             // Setup the logger
             LoggingSystem.bootstrap(StreamLogHandler.standardError)
             appLog.logLevel = .debug
+            #endif
             
             ShadowServerController().startListening(shadowConfigPath: configPath)
             

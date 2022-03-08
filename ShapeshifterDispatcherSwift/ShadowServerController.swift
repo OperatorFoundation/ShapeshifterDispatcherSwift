@@ -9,6 +9,7 @@ import Foundation
 import Logging
 
 import ShadowSwift
+import Flower
 
 struct ShadowServerController
 {
@@ -28,22 +29,14 @@ struct ShadowServerController
         
         while true
         {
-            let shadowConnection = shadowListener.accept()
+            guard let shadowConnection = shadowListener.accept() else
+            {
+                appLog.error("Failed to create a shadow connection.")
+                return
+            }
+            
             print("👻 New Shadow Connection! 👻")
         }
-        
-    //    guard let flowerListener = FlowerListener(port: port, replicantConfig: replicantConfig, logger: logger) else
-    //    {
-    //        print("unable to create Flower listener")
-    //        return
-    //    }
-    //
-    //    while true
-    //    {
-    //        let flowerConnection = flowerListener.accept()
-    //        self.consoleIO.writeMessage("New Replicant Connection!")
-    //        self.process(flowerConnection: flowerConnection, port: serverConfig.port)
-    //    }
     }
 }
 

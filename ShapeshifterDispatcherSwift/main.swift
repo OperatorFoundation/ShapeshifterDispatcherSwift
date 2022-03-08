@@ -23,7 +23,8 @@ extension Command
                 commandName: "Dispatcher",
                 abstract: "A program for launching transport servers.",
                 subcommands: [
-                    Command.ShadowCommand.self
+                    Command.ShadowCommand.self,
+                    Command.ReplicantCommand.self
                 ]
             )
         }
