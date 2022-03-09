@@ -13,6 +13,7 @@ var appLog = Logger(label: "org.OperatorFoundation.ReplicantSwiftServer.Linux")
 
 enum Command {}
 
+// TODO: Refactor to use the exact arguments that dispatcher needs according to the spec
 extension Command
 {
     struct Main: ParsableCommand

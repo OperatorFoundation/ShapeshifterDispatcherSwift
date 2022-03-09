@@ -11,8 +11,8 @@ import ArgumentParser
 import Logging
 import Net
 import ReplicantSwift
-import ReplicantSwiftServerCore
 import Transport
+import Transmission
 
 extension Command
 {
@@ -29,9 +29,18 @@ extension Command
         @Argument(help: "The path to the Replicant config file.")
         var configPath:String
         
+        @Argument(help: "")
+        var targetHost = "127.0.0.1"
+        @Argument(help: "")
+        var targetPort = 9999
+        
+        @Argument(help: "")
+        var bindHost = "0.0.0.0"
+        @Argument(help: "")
+        var bindPort = 1234
+        
         func run() throws
         {
-            
             #if canImport(WASILibc)
             // Logger is already setup
             #else
@@ -48,11 +57,11 @@ extension Command
                 throw Error.configError
             }
             
-            let serverConfig = ServerConfig(withPort: NWEndpoint.Port(integerLiteral: 1234), andHost: NWEndpoint.Host.ipv4(IPv4Address("0.0.0.0")!))
-            let routingController = RoutingController(logger: appLog)
-
-            ///FIXME: User should control whether transport is enabled
-            routingController.startListening(serverConfig: serverConfig, replicantConfig: serverReplicantConfig, replicantEnabled: true)
+            // TODO: ReplicantListener should take a BindHost Argument
+            guard let replicantListener = ReplicantListener(port: bindPort, replicantConfig: serverReplicantConfig, logger: appLog) else { return } // TODO: Throw
+            
+            let routingController = RoutingController()
+            routingController.handleListener(listener: replicantListener, targetHost: targetHost, targetPort: targetPort)
         }
         
         enum Error: LocalizedError
