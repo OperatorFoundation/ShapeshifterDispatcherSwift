@@ -28,7 +28,7 @@ class RoutingController
                 guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
                 {
                     // TODO: close the replicant connection
-                    // TODO: log error that we failed to connect to the application server
+                    appLog.error("Failed to connect to the application server.")
                     continue
                 }
                 
@@ -53,7 +53,7 @@ class RoutingController
     {
         while true
         {
-            guard let dataFromTarget = targetConnection.read(maxSize: 2048) else
+            guard let dataFromTarget = targetConnection.read(maxSize: maxReadSize) else
             {
                 appLog.debug("Received no data from the target on read.")
                 return
@@ -71,7 +71,7 @@ class RoutingController
     {
         while true
         {
-            guard let dataFromTransport = transportConnection.read(maxSize: 2048) else
+            guard let dataFromTransport = transportConnection.read(maxSize: maxReadSize) else
             {
                 appLog.debug("Received no data from the target on read.")
                 return
