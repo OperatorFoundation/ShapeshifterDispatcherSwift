@@ -229,7 +229,7 @@ struct Dispatcher: ParsableCommand
      shapeshifter-dispatcher -server
      */
     @Flag(name: .customLong("server", withSingleDash: true), help: "Specifies that the PT proxy should run in server mode. If neither -client or -server is specified, the PT proxy MUST launch in client mode.")
-    var serverMode = true
+    var serverMode = false
     
     // TODO: bindaddr
     /**
