@@ -1,3 +1,8 @@
-
-ShapeshifterDispatcherSwift.xcodeproj/xcuserdata/mafalda.xcuserdatad/xcschemes/xcschememanagement.plist
-ShapeshifterDispatcherSwift.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+DerivedData/
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+Package.resolved
