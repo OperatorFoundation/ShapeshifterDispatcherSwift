@@ -28,6 +28,12 @@ struct ShadowController
             return
         }
         
+        print("Created a config from JSON:")
+        print(shadowConfig.mode)
+        print(shadowConfig.password)
+        print(shadowConfig.serverIP)
+        print(shadowConfig.port)
+        
         guard let shadowListener = ShadowServer(host: bindHost, port: bindPort, config: shadowConfig, logger: appLog) else
         {
             appLog.error("Failed to initialize a ShadowServer with the config provided.")
