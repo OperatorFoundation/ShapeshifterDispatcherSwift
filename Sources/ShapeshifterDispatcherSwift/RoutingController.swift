@@ -27,7 +27,7 @@ class RoutingController
                 
                 guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
                 {
-                    // TODO: close the replicant connection
+                    // TODO: close the connection
                     appLog.error("Failed to connect to the application server.")
                     continue
                 }
@@ -43,7 +43,7 @@ class RoutingController
             catch
             {
                 
-                appLog.error("Failed to accept new connections.")
+                appLog.error("Failed to accept new connections: \(error)")
                 return
             }
         }
