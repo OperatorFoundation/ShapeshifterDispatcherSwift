@@ -355,6 +355,9 @@ struct Dispatcher: ParsableCommand
         LoggingSystem.bootstrap(StreamLogHandler.standardError)
         appLog.logLevel = .debug
         #endif
+        
+        print("Bind host: \(bindHost)")
+        print("Bind port: \(bindPort)")
                 
         switch (transport)
         {
