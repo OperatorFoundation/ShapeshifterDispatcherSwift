@@ -267,8 +267,8 @@ struct Dispatcher: ParsableCommand
      If a combined -bindaddr is used then -transport, -bindhost, and -bindport MUST NOT be used. Similarly, if -transport, -bindhost, or -bindport is used then -bindaddr MUST NOT be used.
      If -bindhost is specified, then -transport and -bindport must also be used.
      */
-    @Argument(help: "Specifies the <address> part of the server bind address when used in conjunction with -transport and -bindport. If -bindhost is specified, then -transport and -bindport must also be used.")
-    var bindHost = "0.0.0.0"
+    @Option(name: .customLong("bindhost", withSingleDash: true), help: "Specifies the <address> part of the server bind address when used in conjunction with -transport and -bindport. If -bindhost is specified, then -transport and -bindport must also be used.")
+    var bindHost: String
     
     /**
      -bindport
@@ -281,8 +281,8 @@ struct Dispatcher: ParsableCommand
      If a combined -bindaddr is used then -transport, -bindhost, and -bindport MUST NOT be used. Similarly, if -transport, -bindhost, or -bindport is used then -bindaddr MUST NOT be used.
      If -bindport is specified, then -transport and -bindhost must also be used.
      */
-    @Argument(help: "Specifies the <port> part of the server bind address when used in conjunction with -transport and -bindhost.")
-    var bindPort = 1234
+    @Flag(name: .customLong("bindport", withSingleDash: true), help: "Specifies the <port> part of the server bind address when used in conjunction with -transport and -bindhost.")
+    var bindPort: Int
     
     // TODO: target
     /**
