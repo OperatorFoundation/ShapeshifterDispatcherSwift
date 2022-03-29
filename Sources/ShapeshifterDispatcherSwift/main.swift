@@ -281,7 +281,7 @@ struct Dispatcher: ParsableCommand
      If a combined -bindaddr is used then -transport, -bindhost, and -bindport MUST NOT be used. Similarly, if -transport, -bindhost, or -bindport is used then -bindaddr MUST NOT be used.
      If -bindport is specified, then -transport and -bindhost must also be used.
      */
-    @Flag(name: .customLong("bindport", withSingleDash: true), help: "Specifies the <port> part of the server bind address when used in conjunction with -transport and -bindhost.")
+    @Option(name: .customLong("bindport", withSingleDash: true), help: "Specifies the <port> part of the server bind address when used in conjunction with -transport and -bindhost.")
     var bindPort: Int
     
     // TODO: target
