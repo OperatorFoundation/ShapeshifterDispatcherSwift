@@ -29,7 +29,7 @@ struct Dispatcher: ParsableCommand
      shapeshifter -dispatcher -ptversion 1,1a,2.2,this_is_a_valid_version */
     // TODO: Accept a list of versions
     @Option(name: .customLong("ptversion", withSingleDash: true), help: "Specifies the versions of the Pluggable Transport specification the parent process supports, delimited by commas. All PTs MUST accept any well-formed list, as long as a compatible version is present.")
-    var ptVersion: String = "3.0"
+    var ptVersion: String
     
     /** -state
      Specifies a path to a directory where the PT is allowed to store state that will be persisted across invocations. This can be either an absolute path or a relative path. If a relative path is used, it is assumed to be relative to the current directory. The directory is not required to exist when the PT is launched, however PT implementations SHOULD be able to create it as required.
@@ -316,8 +316,8 @@ struct Dispatcher: ParsableCommand
 
      shapeshifter-dispatcher -targethost 93.184.216.34 -targetport 9001
      */
-    @Argument(help: "Specifies the <address> of the destination that the PT reverse proxy should forward traffic to after transforming it as appropriate. Unless otherwise specified in the documentation of the specific transport being used, the address can be an IPv4 IP address, an IPv6 IP address, or a domain name.")
-    var targetHost = "127.0.0.1"
+    @Option(help: "Specifies the <address> of the destination that the PT reverse proxy should forward traffic to after transforming it as appropriate. Unless otherwise specified in the documentation of the specific transport being used, the address can be an IPv4 IP address, an IPv6 IP address, or a domain name.")
+    var targetHost: String
     
     
     /**
@@ -335,7 +335,7 @@ struct Dispatcher: ParsableCommand
      shapeshifter-dispatcher -targethost 93.184.216.34 -targetport 9001
      */
     @Argument(help: "Specifies the <port> of the destination that the PT reverse proxy should forward traffic to after transforming it as appropriate.")
-    var targetPort = 9999
+    var targetPort: Int
     
     func validate() throws
     {
