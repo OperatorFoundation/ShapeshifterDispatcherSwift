@@ -316,7 +316,7 @@ struct Dispatcher: ParsableCommand
 
      shapeshifter-dispatcher -targethost 93.184.216.34 -targetport 9001
      */
-    @Option(help: "Specifies the <address> of the destination that the PT reverse proxy should forward traffic to after transforming it as appropriate. Unless otherwise specified in the documentation of the specific transport being used, the address can be an IPv4 IP address, an IPv6 IP address, or a domain name.")
+    @Option(name: .customLong("targethost", withSingleDash: true), help: "Specifies the <address> of the destination that the PT reverse proxy should forward traffic to after transforming it as appropriate. Unless otherwise specified in the documentation of the specific transport being used, the address can be an IPv4 IP address, an IPv6 IP address, or a domain name.")
     var targetHost: String
     
     
@@ -334,7 +334,7 @@ struct Dispatcher: ParsableCommand
      Example:
      shapeshifter-dispatcher -targethost 93.184.216.34 -targetport 9001
      */
-    @Argument(help: "Specifies the <port> of the destination that the PT reverse proxy should forward traffic to after transforming it as appropriate.")
+    @Option(name: .customLong("targetport", withSingleDash: true), help: "Specifies the <port> of the destination that the PT reverse proxy should forward traffic to after transforming it as appropriate.")
     var targetPort: Int
     
     func validate() throws
