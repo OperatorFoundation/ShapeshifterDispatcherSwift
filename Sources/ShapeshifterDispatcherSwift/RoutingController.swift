@@ -59,6 +59,8 @@ class RoutingController
                 return
             }
             
+            print("ShShD data from target: size - \(dataFromTarget.count), contents - \(dataFromTarget.hex)")
+            
             guard transportConnection.write(data: dataFromTarget) else
             {
                 appLog.debug("Unable to send target data to the transport connection. The connection was likely closed.")
