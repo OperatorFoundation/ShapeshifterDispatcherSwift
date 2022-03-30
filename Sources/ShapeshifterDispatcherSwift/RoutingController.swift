@@ -83,7 +83,7 @@ class RoutingController
                 return
             }
 
-            guard dataFromTarget.count > 0 else
+            guard dataFromTransport.count > 0 else
             {
                 appLog.error("transferTransportToTarget: 0 length data was read - this should not happen")
                 return
