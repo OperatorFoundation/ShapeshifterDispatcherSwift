@@ -55,7 +55,13 @@ class RoutingController
         {
             guard let dataFromTarget = targetConnection.read(maxSize: maxReadSize) else
             {
-                appLog.debug("Received no data from the target on read.")
+                appLog.debug("transferTargetToTransport: Received no data from the target on read.")
+                return
+            }
+
+            guard dataFromTarget.count > 0 else
+            {
+                appLog.error("transferTargetToTransport: 0 length data was read - this should not happen")
                 return
             }
             
@@ -63,7 +69,7 @@ class RoutingController
             
             guard transportConnection.write(data: dataFromTarget) else
             {
-                appLog.debug("Unable to send target data to the transport connection. The connection was likely closed.")
+                appLog.debug("transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed.")
                 return
             }
         }
@@ -75,13 +81,19 @@ class RoutingController
         {
             guard let dataFromTransport = transportConnection.read(maxSize: maxReadSize) else
             {
-                appLog.debug("Received no data from the target on read.")
+                appLog.debug("transferTransportToTarget: Received no data from the target on read.")
+                return
+            }
+
+            guard dataFromTarget.count > 0 else
+            {
+                appLog.error("transferTransportToTarget: 0 length data was read - this should not happen")
                 return
             }
             
             guard targetConnection.write(data: dataFromTransport) else
             {
-                appLog.debug("Unable to send target data to the target connection. The connection was likely closed.")
+                appLog.debug("transferTransportToTarget: Unable to send target data to the target connection. The connection was likely closed.")
                 return
             }
         }
