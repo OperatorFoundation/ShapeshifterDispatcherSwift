@@ -48,7 +48,7 @@ struct ShadowController
         
         guard let shadowListener = ShadowServer(host: bindHost, port: bindPort, config: shadowConfig, logger: appLog) else
         {
-            appLog.error("ShShD Failed to initialize a ShadowServer with the config provided.")
+            appLog.error("Shapeshifter Failed to initialize a ShadowServer with the config provided.")
             return
         }
         

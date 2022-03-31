@@ -12,7 +12,7 @@ import Logging
 import ShadowSwift
 
 let supportedPTVersion = "3.0"
-var appLog = Logger(label: "org.OperatorFoundation.ShapeshifterDispatcherSwift")
+var appLog = Logger(label: "ShapeshifterDispatcherSwift")
 
 // TODO: Refactor to use the exact arguments that dispatcher needs according to the spec
 struct Dispatcher: ParsableCommand
