@@ -54,6 +54,8 @@ struct ShadowController
         
         let routingController = RoutingController()
         
+        print("Listening...")
+        
         routingController.handleListener(listener: shadowListener, targetHost: targetHost, targetPort: targetPort)
     }
 }

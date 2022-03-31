@@ -384,10 +384,7 @@ struct Dispatcher: ParsableCommand
                     appLog.error("Currently only server mode is supported.")
                     return
                 }
-                
         }
-        
-        
     }
     
     enum Error: LocalizedError
