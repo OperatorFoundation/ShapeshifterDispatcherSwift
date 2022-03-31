@@ -64,9 +64,7 @@ class RoutingController
                 appLog.error("transferTargetToTransport: 0 length data was read - this should not happen")
                 return
             }
-            
-            print("ShShD data from target: size - \(dataFromTarget.count), contents - \(dataFromTarget.hex)")
-            
+                        
             guard transportConnection.write(data: dataFromTarget) else
             {
                 appLog.debug("transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed.")
