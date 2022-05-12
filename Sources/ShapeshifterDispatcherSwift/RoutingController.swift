@@ -80,13 +80,13 @@ class RoutingController
     {
         while true
         {
-            appLog.debug("transferTransportToTarget: Attempting to read...")
+            print("transferTransportToTarget: Attempting to read...")
             guard let dataFromTransport = transportConnection.read(maxSize: maxReadSize) else
             {
                 appLog.debug("transferTransportToTarget: Received no data from the target on read.")
                 return
             }
-            appLog.debug("transferTransportToTarget: Finished reading.")
+            print("transferTransportToTarget: Finished reading.")
             
             guard dataFromTransport.count > 0 else
             {
