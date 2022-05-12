@@ -16,9 +16,6 @@ class RoutingController
     
     func handleListener(listener: Transmission.Listener, targetHost: String, targetPort: Int)
     {
-        let targetToTransportQueue = DispatchQueue(label: "targetToTransportQueue")
-        let transportToTargetQueue = DispatchQueue(label: "transportToTargetQueue")
-        
         while true
         {
             do
@@ -27,13 +24,15 @@ class RoutingController
                 
                 guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
                 {
-                    // TODO: close the connection
                     print("ShapeshifterDispatcher.handleListener: Failed to connect to the target server.")
                     appLog.error("Failed to connect to the application server.")
+                    listener.close()
                     continue
                 }
                 
                 print("Received a new connection 🌷")
+                let targetToTransportQueue = DispatchQueue(label: "targetToTransportQueue")
+                let transportToTargetQueue = DispatchQueue(label: "transportToTargetQueue")
                 
                 targetToTransportQueue.async {
                     self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
