@@ -33,6 +33,8 @@ class RoutingController
                     continue
                 }
                 
+                print("Received a new connection 🌷")
+                
                 targetToTransportQueue.async {
                     self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
                 }
@@ -78,12 +80,14 @@ class RoutingController
     {
         while true
         {
+            appLog.debug("transferTransportToTarget: Attempting to read...")
             guard let dataFromTransport = transportConnection.read(maxSize: maxReadSize) else
             {
                 appLog.debug("transferTransportToTarget: Received no data from the target on read.")
                 return
             }
-
+            appLog.debug("transferTransportToTarget: Finished reading.")
+            
             guard dataFromTransport.count > 0 else
             {
                 appLog.error("transferTransportToTarget: 0 length data was read - this should not happen")
