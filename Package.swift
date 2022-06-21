@@ -11,7 +11,7 @@ let package = Package(
     dependencies: [
         .package(url:"https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "main"),
         .package(url:"https://github.com/OperatorFoundation/ShadowSwift.git", branch: "main"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("1.0.3"))
+        .package(url: "https://github.com/apple/swift-argument-parser.git", exact: "1.0.3"),
     ],
     targets: [
         .executableTarget(
