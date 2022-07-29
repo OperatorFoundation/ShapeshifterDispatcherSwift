@@ -12,6 +12,7 @@ let package = Package(
         .package(url:"https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "main"),
         .package(url:"https://github.com/OperatorFoundation/ShadowSwift.git", branch: "main"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", exact: "1.0.3"),
+        .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "main")
     ],
     targets: [
         .executableTarget(
@@ -19,6 +20,7 @@ let package = Package(
             dependencies: [
                 "ReplicantSwift",
                 "ShadowSwift",
+                "Starbridge",
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]),
         .testTarget(

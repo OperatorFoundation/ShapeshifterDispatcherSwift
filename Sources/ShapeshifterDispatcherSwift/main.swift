@@ -86,7 +86,7 @@ struct Dispatcher: ParsableCommand
      shapeshifter-dispatcher -transport shadow
      */
     enum TransportType: String, CaseIterable, ExpressibleByArgument {
-           case replicant, shadow
+           case replicant, shadow, starbridge
     }
     @Option(name: .customLong("transport", withSingleDash: true), help: "Specifies the name of the PT to use.")
     var transport: TransportType
@@ -378,6 +378,19 @@ struct Dispatcher: ParsableCommand
                 if serverMode
                 {
                     try replicantController.runServer()
+                }
+                else
+                {
+                    appLog.error("Currently only server mode is supported.")
+                    return
+                }
+                
+            case .starbridge:
+                let starbridgeController = StarbridgeController(configPath: optionsDir, targetHost: targetHost, targetPort: targetPort, bindHost: bindHost, bindPort: bindPort)
+                
+                if serverMode
+                {
+                    try starbridgeController.runServer()
                 }
                 else
                 {
