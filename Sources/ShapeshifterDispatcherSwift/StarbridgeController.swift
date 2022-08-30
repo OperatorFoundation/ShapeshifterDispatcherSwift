@@ -26,7 +26,7 @@ struct StarbridgeController
     {
         guard let starbridgeConfig = StarbridgeServerConfig(withConfigAtPath: configPath) else
         {
-            appLog.error("Failed to launch a ShadowServer, we were unable to parse the config at the provided path.")
+            appLog.error("Failed to launch a Starbridge Server, we were unable to parse the config at the provided path.")
             return
         }
         
@@ -42,11 +42,10 @@ struct StarbridgeController
             appLog.error("Failed to create a Starbridge listener.")
             return
         }
-                
-        let routingController = RoutingController()
-        
+               
         print("Listening...")
         
+        let routingController = RoutingController()
         routingController.handleListener(listener: starbridgeListener, targetHost: targetHost, targetPort: targetPort)
     }
 }
