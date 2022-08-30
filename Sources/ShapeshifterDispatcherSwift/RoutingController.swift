@@ -68,13 +68,11 @@ class Router
     let transportToTargetQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.transportToTargetQueue")
     let cleanupQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.cleanupQueue")
     
-    let lock = DispatchSemaphore(value: 2)
+    let lock = DispatchSemaphore(value: 0)
     let controller: RoutingController
     let uuid = UUID()
     
     var keepGoing = true
-    var transportToTargetComplete = false
-    var targetToTransportComplete = false
     
     init(controller: RoutingController, transportConnection: Transmission.Connection, targetConnection: Transmission.Connection)
     {
@@ -84,23 +82,17 @@ class Router
         
         print("ShapeshifterDispatcherSwift: Router Received a new connection")
 
-        targetToTransportQueue.async {
+        self.targetToTransportQueue.async {
             self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
         }
         
-        transportToTargetQueue.async {
+        self.transportToTargetQueue.async {
             self.transferTransportToTarget(transportConnection: transportConnection, targetConnection: targetConnection)
         }
-                
-//        cleanupQueue.async {
-//            self.cleanup()
-//        }
     }
     
     func transferTargetToTransport(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection)
     {
-        lock.wait()
-        
         print("Target to Transport running...")
         while keepGoing
         {
@@ -126,16 +118,15 @@ class Router
             }
         }
         
-        lock.signal()
-        targetToTransportComplete = true
+        self.lock.signal()
+        
         print("Target to Transport finished!")
-        cleanup()
+        
+        self.cleanup()
     }
     
     func transferTransportToTarget(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection)
     {
-        lock.wait()
-        
         print("Transport to Target running...")
         
         while keepGoing
@@ -147,6 +138,7 @@ class Router
                 keepGoing = false
                 break
             }
+            
             print("transferTransportToTarget: Finished reading.")
             
             guard dataFromTransport.count > 0 else
@@ -160,20 +152,24 @@ class Router
             {
                 appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Unable to send target data to the target connection. The connection was likely closed.")
                 keepGoing = false
+                
                 break
             }
         }
         
-        lock.signal()
+        self.lock.signal()
         
         print("Transport to Target finished!")
-        transportToTargetComplete = true
-        cleanup()
+        
+        self.cleanup()
     }
     
     func cleanup()
     {
-        if !keepGoing, transportToTargetComplete, targetToTransportComplete
+        self.lock.wait()
+        self.lock.wait()
+        
+        if !keepGoing
         {
             print("Route clean up...")
             self.controller.remove(route: self)
