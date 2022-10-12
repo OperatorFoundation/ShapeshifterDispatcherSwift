@@ -15,7 +15,7 @@ let supportedPTVersion = "3.0"
 var appLog = Logger(label: "ShapeshifterDispatcherSwift")
 
 // TODO: Refactor to use the exact arguments that dispatcher needs according to the spec
-struct Dispatcher: ParsableCommand
+struct ShapeshifterDispatcher: ParsableCommand
 {
     
     /** -ptversion
@@ -416,5 +416,5 @@ struct Dispatcher: ParsableCommand
     }
 }
 
-Dispatcher.main()
+ShapeshifterDispatcher.main()
 

@@ -21,8 +21,14 @@ let package = Package(
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ]),
+                .product(name: "ArgumentParser", package: "swift-argument-parser")]),
+        .executableTarget(
+            name: "ShapeshifterConfigs",
+            dependencies: [
+                "ReplicantSwift",
+                "ShadowSwift",
+                "Starbridge",
+                .product(name: "ArgumentParser", package: "swift-argument-parser")]),
         .testTarget(
             name: "ShapeshifterDispatcherSwiftTests",
             dependencies: ["ShapeshifterDispatcherSwift"]),
