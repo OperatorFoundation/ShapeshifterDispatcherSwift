@@ -10,10 +10,11 @@ import Foundation
 import Logging
 
 import ShadowSwift
+import Starbridge
 
 struct ShapeshifterConfig: ParsableCommand
 {
-    static let configuration = CommandConfiguration(abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher", subcommands: [Shadow.self, Starbridge.self])
+    static let configuration = CommandConfiguration(abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher", subcommands: [ShadowConfigGenerator.self, StarbridgeConfigGenerator.self])
     
     struct Options: ParsableArguments
     {
@@ -42,9 +43,9 @@ struct ShapeshifterConfig: ParsableCommand
 
 extension ShapeshifterConfig
 {
-    struct Shadow: ParsableCommand
+    struct ShadowConfigGenerator: ParsableCommand
     {
-        static let configuration = CommandConfiguration(abstract: "Generate new config files for the Shadow transport.")
+        static let configuration = CommandConfiguration(commandName: "shadow", abstract: "Generate new config files for the Shadow transport.")
         
         @OptionGroup() var parentOptions: Options
         
@@ -93,52 +94,27 @@ extension ShapeshifterConfig
 
 extension ShapeshifterConfig
 {
-    struct Starbridge: ParsableCommand
+    struct StarbridgeConfigGenerator: ParsableCommand
     {
-        static let configuration = CommandConfiguration(abstract: "Generate new config files for the Starbridge transport.")
+        static let configuration = CommandConfiguration(commandName: "starbridge", abstract: "Generate new config files for the Starbridge transport.")
         
         @OptionGroup() var parentOptions: Options
         
-        @Option(name: .shortAndLong, help: "Specifies the cipher the Shadow server should use, currently only DarkStar is supported.")
-        var cipher: String = "DarkStar"
-        
-        func validate() throws
-        {
-            guard CipherMode(rawValue: cipher) != nil else
-            {
-                throw ShadowError.cipherModeNotSupported(cipherString: cipher)
-            }
-        }
-        
         func run() throws
         {
-            print("Starbridge config generation is not yet supported.")
-            // print("Generating Starbridge Configs...")
+             print("Generating Starbridge Configs...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            
-            guard let cipherMode = CipherMode(rawValue: cipher) else
+            let success = Starbridge.createNewConfigFiles(inDirectory: saveURL, serverIP: parentOptions.host, serverPort: parentOptions.port)
+    
+            if success
             {
-                throw ShadowError.cipherModeNotSupported(cipherString: cipher)
+                print("New Starbridge config files have been saved to \(saveURL)")
             }
-            
-    //        let result = ShadowConfig.createNewConfigFiles(inDirectory: saveURL, serverIP: host, serverPort: port, cipher: cipherMode)
-    //
-    //        if result.saved
-    //        {
-    //            print("New Starbridge config files have been saved to \(saveURL)")
-    //        }
-    //        else
-    //        {
-    //            if let saveError = result.error
-    //            {
-    //                print("Error generating new Starbridge config files: \(saveError)")
-    //            }
-    //            else
-    //            {
-    //                print("Failed to generate the requested Starbridge config files.")
-    //            }
-    //        }
+            else
+            {
+                print("Failed to generate the requested Starbridge config files.")
+            }
         }
     }
 }
