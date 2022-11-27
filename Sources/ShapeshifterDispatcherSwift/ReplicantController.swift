@@ -30,7 +30,7 @@ struct ReplicantController
         }
         
         // TODO: ReplicantListener should take a BindHost Argument
-        let replicant = Replicant(logger: appLog)
+        let replicant = Replicant(logger: appLog, osLogger: nil)
         
         
         guard let replicantListener = try? replicant.listen(address: bindHost, port: bindPort, config: serverReplicantConfig) else

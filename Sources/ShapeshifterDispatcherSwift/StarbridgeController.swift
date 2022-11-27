@@ -35,7 +35,7 @@ struct StarbridgeController
         
         let starburstConfig = StarburstConfig.SMTPServer
         
-        let starbridge = Starbridge(logger: appLog, config: starburstConfig)
+        let starbridge = Starbridge(logger: appLog, osLogger: nil, config: starburstConfig)
         
         guard let starbridgeListener = try? starbridge.listen(config: starbridgeConfig) else
         {
