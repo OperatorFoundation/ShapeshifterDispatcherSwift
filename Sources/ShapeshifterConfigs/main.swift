@@ -9,6 +9,7 @@ import ArgumentParser
 import Foundation
 import Logging
 
+import ReplicantSwift
 import ShadowSwift
 import Starbridge
 
@@ -26,6 +27,10 @@ struct ShapeshifterConfig: ParsableCommand
         
         @Option(name: .shortAndLong, help: "Specifies the directory the configs should be saved to.")
         var directory: String
+        
+        @Flag var toneburst = false
+        
+        @Flag var polish = false
     }
     
     @OptionGroup() var parentOptions: Options
@@ -71,7 +76,7 @@ extension ShapeshifterConfig
                 throw ShadowError.cipherModeNotSupported(cipherString: cipher)
             }
             
-            let result = ShadowConfig.createNewConfigFiles(inDirectory: saveURL, serverIP: parentOptions.host, serverPort: parentOptions.port, cipher: cipherMode)
+            let result = ShadowConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", cipher: cipherMode)
             
             if result.saved
             {
@@ -105,7 +110,7 @@ extension ShapeshifterConfig
              print("Generating Starbridge Configs...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            let success = Starbridge.createNewConfigFiles(inDirectory: saveURL, serverIP: parentOptions.host, serverPort: parentOptions.port)
+            let success = Starbridge.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
     
             if success
             {
@@ -115,6 +120,22 @@ extension ShapeshifterConfig
             {
                 print("Failed to generate the requested Starbridge config files.")
             }
+        }
+    }
+}
+
+extension ShapeshifterConfig
+{
+    struct ReplicantConfigGenerator: ParsableCommand
+    {
+        static let configuration = CommandConfiguration(commandName: "replicant", abstract: "Generate new config files for the Replicant transport.")
+        
+        @OptionGroup() var parentOptions: Options
+        
+        func run() throws
+        {
+            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
+            let success = ReplicantSwift.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", polish: parentOptions.polish, toneburst: parentOptions.toneburst)
         }
     }
 }

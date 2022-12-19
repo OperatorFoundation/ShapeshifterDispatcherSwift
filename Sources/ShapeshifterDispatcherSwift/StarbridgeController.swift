@@ -30,10 +30,9 @@ struct StarbridgeController
             return
         }
         
-        print(starbridgeConfig.serverIP)
-        print(starbridgeConfig.port)
+        print(starbridgeConfig.serverAddress)
         
-        let starburstConfig = StarburstConfig.SMTPServer
+        let starburstConfig = StarburstConfig(mode: .SMTPServer)
         
         let starbridge = Starbridge(logger: appLog, osLogger: nil, config: starburstConfig)
         

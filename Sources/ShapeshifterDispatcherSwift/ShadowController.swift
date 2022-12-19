@@ -23,17 +23,16 @@ struct ShadowController
     
     func runServer() throws
     {
-        guard let shadowConfig = ShadowConfig(path: configPath) else
+        guard let shadowConfig = ShadowConfig.ShadowServerConfig(path: configPath) else
         {
             appLog.error("Failed to launch a ShadowServer, we were unable to parse the config at the provided path.")
             return
         }
         
         print(shadowConfig.mode)
-        print(shadowConfig.serverIP)
-        print(shadowConfig.port)
+        print(shadowConfig.serverAddress)
         
-        guard let serverPersistentPrivateKeyData = Data(hex: shadowConfig.password) else
+        guard let serverPersistentPrivateKeyData = Data(base64: shadowConfig.serverPrivateKey) else
         {
             appLog.error("ShapeshifterDispatcher Failed to parse password from config.")
             return
