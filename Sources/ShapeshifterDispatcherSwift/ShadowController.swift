@@ -32,19 +32,7 @@ struct ShadowController
         print(shadowConfig.mode)
         print(shadowConfig.serverAddress)
         
-        guard let serverPersistentPrivateKeyData = Data(base64: shadowConfig.serverPrivateKey) else
-        {
-            appLog.error("ShapeshifterDispatcher Failed to parse password from config.")
-            return
-        }
-        
-        guard let serverPersistentPrivateKey = try? P256.KeyAgreement.PrivateKey(rawRepresentation: serverPersistentPrivateKeyData) else
-        {
-            appLog.error("ShapeshifterDispatcher Failed to generate key from data.")
-            return
-        }
-        
-        print("Server public key: \(serverPersistentPrivateKey.publicKey.compactRepresentation?.hex ?? "Failed to get a compact representation of the public key.")")
+        let serverPersistentPrivateKey = shadowConfig.serverPrivateKey 
         
         guard let shadowListener = ShadowServer(host: bindHost, port: bindPort, config: shadowConfig, logger: appLog) else
         {
