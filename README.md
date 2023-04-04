@@ -44,7 +44,7 @@ Running this command will generate a valid server and client config file pair, a
 
 Note that because Starbridge uses encryption, it is not possible to mix and match server and client configs. The server config that is generated will run a server that clients can connect to, ONLY if they use the client config information that was generated at the same time.
 ```
-ShapeshifterConfigs starbridge --host <serverIP> --port <serverPort> --directory <pathToSaveDirectory>
+swift run ShapeshifterConfigs starbridge --host <serverIP> --port <serverPort> --directory <pathToSaveDirectory>
 ```
 
 #### Shadow Config Generation
@@ -53,5 +53,5 @@ Running this command will generate a valid server and client config file pair, a
 
 Note that because shadow uses encryption, it is not possible to mix and match server and client configs. The server config that is generated will run a server that clients can connect to, ONLY if they use the client config information that was generated at the same time.
 ```
-ShapeshifterConfigs shadow --host <serverIP> --port <serverPort> --directory <pathToSaveDirectory>
+swift run ShapeshifterConfigs shadow --host <serverIP> --port <serverPort> --directory <pathToSaveDirectory>
 ```
