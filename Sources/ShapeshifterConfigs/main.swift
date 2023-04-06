@@ -55,7 +55,7 @@ extension ShapeshifterConfig
         @OptionGroup() var parentOptions: Options
         
         @Option(name: .shortAndLong, help: "Specifies the cipher the Shadow server should use, currently only DarkStar is supported.")
-        var cipher: String = "DarkStar"
+        var cipher: String = "darkstar"
         
         func validate() throws
         {
