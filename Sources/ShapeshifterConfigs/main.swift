@@ -15,7 +15,7 @@ import Starbridge
 
 struct ShapeshifterConfig: ParsableCommand
 {
-    static let configuration = CommandConfiguration(abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher", subcommands: [ShadowConfigGenerator.self, StarbridgeConfigGenerator.self])
+    static let configuration = CommandConfiguration(abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher", subcommands: [ShadowConfigGenerator.self, StarbridgeConfigGenerator.self, ReplicantConfigGenerator.self])
     
     struct Options: ParsableArguments
     {
@@ -134,8 +134,19 @@ extension ShapeshifterConfig
         
         func run() throws
         {
+            print("Generating Replicant Configs...")
+            
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
             let success = ReplicantSwift.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", polish: parentOptions.polish, toneburst: parentOptions.toneburst)
+            
+            if success
+            {
+                print("New Starbridge config files have been saved to \(saveURL)")
+            }
+            else
+            {
+                print("Failed to generate the requested Starbridge config files.")
+            }
         }
     }
 }
