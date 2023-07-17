@@ -106,7 +106,7 @@ struct ShapeshifterDispatcher: ParsableCommand
      The contents of the file MUST be in the same format as the argument to the -options parameter.
      The application MUST NOT specify both -options and -optionsFile simultaneously.
      */
-    @Option(name: .customLong("optionsFile", withSingleDash: true), help: "Specifies the path to a file containing the transport options.", completion: .directory)
+    @Option(name: .customLong("optionsfile", withSingleDash: true), help: "Specifies the path to a file containing the transport options.", completion: .directory)
     var optionsDir: String
     
     // TODO: options

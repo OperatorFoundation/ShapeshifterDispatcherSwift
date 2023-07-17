@@ -25,7 +25,7 @@ struct ShadowController
     {
         guard let shadowConfig = ShadowConfig.ShadowServerConfig(path: configPath) else
         {
-            appLog.error("Failed to launch a ShadowServer, we were unable to parse the config at the provided path.")
+            appLog.error("Failed to launch a ShadowServer, we were unable to parse the config at the provided path: \(configPath)")
             return
         }
         
