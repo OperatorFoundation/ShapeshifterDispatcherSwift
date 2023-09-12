@@ -110,7 +110,7 @@ extension ShapeshifterConfig
              print("Generating Starbridge Configs...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            let success = Starbridge.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
+            let success = try Starbridge.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
     
             if success
             {
