@@ -31,10 +31,8 @@ struct StarbridgeController
         }
         
         print(starbridgeConfig.serverAddress)
-        
-        let starburstConfig = StarburstConfig(mode: .SMTPServer)
-        
-        let starbridge = Starbridge(logger: appLog, config: starburstConfig)
+                
+        let starbridge = Starbridge(logger: appLog)
         
         guard let starbridgeListener = try? starbridge.listen(config: starbridgeConfig) else
         {
