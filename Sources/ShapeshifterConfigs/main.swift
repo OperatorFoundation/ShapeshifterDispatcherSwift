@@ -9,13 +9,19 @@ import ArgumentParser
 import Foundation
 import Logging
 
+import Dandelion
 import ReplicantSwift
 import ShadowSwift
 import Starbridge
 
 struct ShapeshifterConfig: ParsableCommand
 {
-    static let configuration = CommandConfiguration(abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher", subcommands: [ShadowConfigGenerator.self, StarbridgeConfigGenerator.self, ReplicantConfigGenerator.self])
+    static let configuration = CommandConfiguration(
+        abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher",
+        subcommands: [ShadowConfigGenerator.self,
+                      StarbridgeConfigGenerator.self,
+                      ReplicantConfigGenerator.self,
+                      DandelionConfigGenerator.self])
     
     struct Options: ParsableArguments
     {
@@ -29,7 +35,6 @@ struct ShapeshifterConfig: ParsableCommand
         var directory: String
         
         @Flag var toneburst = false
-        
         @Flag var polish = false
     }
     
@@ -67,7 +72,7 @@ extension ShapeshifterConfig
         
         func run() throws
         {
-            print("Generating Shadow Configs...")
+            print("Generating Shadow configuration files...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
             
@@ -107,7 +112,7 @@ extension ShapeshifterConfig
         
         func run() throws
         {
-             print("Generating Starbridge Configs...")
+             print("Generating Starbridge configuration files...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
             let success = try Starbridge.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
@@ -134,7 +139,7 @@ extension ShapeshifterConfig
         
         func run() throws
         {
-            print("Generating Replicant Configs...")
+            print("Generating Replicant configuration files...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
             let success = ReplicantSwift.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", polish: parentOptions.polish, toneburst: parentOptions.toneburst)
@@ -147,6 +152,27 @@ extension ShapeshifterConfig
             {
                 print("Failed to generate the requested Starbridge config files.")
             }
+        }
+    }
+}
+
+extension ShapeshifterConfig
+{
+    struct DandelionConfigGenerator: ParsableCommand
+    {
+        static let configuration = CommandConfiguration(commandName: "dandelion", abstract: "Generate new config files for the Dandelion transport.")
+        
+        @OptionGroup() var parentOptions: Options
+        
+        func run() throws
+        {
+            print("Generating Dandelion configuration files...")
+            
+            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
+            
+            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
+            print("New Dandelion config files have been saved to \(saveURL)")
+            
         }
     }
 }

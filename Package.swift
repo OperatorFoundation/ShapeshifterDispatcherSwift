@@ -9,15 +9,17 @@ let package = Package(
         .macOS(.v13)
     ],
     dependencies: [
-        .package(url:"https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "main"),
-        .package(url:"https://github.com/OperatorFoundation/ShadowSwift.git", branch: "main"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.2"),
-        .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "main")
+        .package(url: "git@github.com:apple/swift-argument-parser.git", from: "1.2.3"),
+        .package(url: "git@github.com:OperatorFoundation/Dandelion.git", branch: "main"),
+        .package(url: "git@github.com:OperatorFoundation/ReplicantSwift.git", branch: "main"),
+        .package(url: "git@github.com:OperatorFoundation/ShadowSwift.git", branch: "main"),
+        .package(url: "git@github.com:OperatorFoundation/Starbridge.git", branch: "main")
     ],
     targets: [
         .executableTarget(
             name: "ShapeshifterDispatcherSwift",
             dependencies: [
+                "Dandelion",
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
@@ -25,6 +27,7 @@ let package = Package(
         .executableTarget(
             name: "ShapeshifterConfigs",
             dependencies: [
+                "Dandelion",
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",

@@ -32,7 +32,7 @@ struct ShadowController
         print(shadowConfig.mode)
         print(shadowConfig.serverAddress)
         
-        let serverPersistentPrivateKey = shadowConfig.serverPrivateKey 
+//        let serverPersistentPrivateKey = shadowConfig.serverPrivateKey 
         
         guard let shadowListener = ShadowServer(host: bindHost, port: bindPort, config: shadowConfig, logger: appLog) else
         {
