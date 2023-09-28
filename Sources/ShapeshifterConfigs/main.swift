@@ -20,8 +20,7 @@ struct ShapeshifterConfig: ParsableCommand
         abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher",
         subcommands: [ShadowConfigGenerator.self,
                       StarbridgeConfigGenerator.self,
-                      ReplicantConfigGenerator.self,
-                      DandelionConfigGenerator.self])
+                      ReplicantConfigGenerator.self])
     
     struct Options: ParsableArguments
     {
@@ -152,27 +151,6 @@ extension ShapeshifterConfig
             {
                 print("Failed to generate the requested Starbridge config files.")
             }
-        }
-    }
-}
-
-extension ShapeshifterConfig
-{
-    struct DandelionConfigGenerator: ParsableCommand
-    {
-        static let configuration = CommandConfiguration(commandName: "dandelion", abstract: "Generate new config files for the Dandelion transport.")
-        
-        @OptionGroup() var parentOptions: Options
-        
-        func run() throws
-        {
-            print("Generating Dandelion configuration files...")
-            
-            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            
-            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
-            print("New Dandelion config files have been saved to \(saveURL)")
-            
         }
     }
 }
