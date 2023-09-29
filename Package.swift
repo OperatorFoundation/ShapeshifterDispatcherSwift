@@ -19,11 +19,11 @@ let package = Package(
         .executableTarget(
             name: "ShapeshifterDispatcherSwift",
             dependencies: [
-                "Dandelion",
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
-                .product(name: "ArgumentParser", package: "swift-argument-parser")]),
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "DandelionServer", package: "Dandelion")]),
         .executableTarget(
             name: "ShapeshifterConfigs",
             dependencies: [

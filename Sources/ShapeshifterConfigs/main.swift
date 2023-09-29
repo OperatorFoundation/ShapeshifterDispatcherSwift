@@ -10,6 +10,7 @@ import Foundation
 import Logging
 
 import Dandelion
+import Keychain
 import ReplicantSwift
 import ShadowSwift
 import Starbridge
@@ -164,13 +165,22 @@ extension ShapeshifterConfig
         
         @OptionGroup() var parentOptions: Options
         
+        @Option(name: .shortAndLong, help: "The Dandelion public encryption key.")
+        var key: String
+        
         func run() throws
         {
             print("Generating Dandelion configuration files...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
             
-            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
+            guard let publicKey = PublicKey(jsonString: key) else
+            {
+                // TODO: Throw
+                return
+            }
+            
+            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", serverPublicKey: publicKey)
             print("New Dandelion config files have been saved to \(saveURL)")
             
         }

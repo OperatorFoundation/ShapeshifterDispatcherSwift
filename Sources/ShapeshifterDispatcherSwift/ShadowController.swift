@@ -29,11 +29,10 @@ struct ShadowController
             return
         }
         
-        print(shadowConfig.mode)
-        print(shadowConfig.serverAddress)
-        
-//        let serverPersistentPrivateKey = shadowConfig.serverPrivateKey 
-        
+        print("Starting a shadow server.")
+        print("Shadow cipher mode: \(shadowConfig.mode)")
+        print("Server address: \(shadowConfig.serverAddress)")
+                
         guard let shadowListener = ShadowServer(host: bindHost, port: bindPort, config: shadowConfig, logger: appLog) else
         {
             appLog.error("Shapeshifter Failed to initialize a ShadowServer with the config provided.")
