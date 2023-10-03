@@ -10,9 +10,9 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "git@github.com:apple/swift-argument-parser.git", from: "1.2.3"),
-        .package(url: "git@github.com:OperatorFoundation/ReplicantSwift.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/ShadowSwift.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/Starbridge.git", branch: "main")
+        .package(url: "git@github.com:OperatorFoundation/ReplicantSwift.git", branch: "release"),
+        .package(url: "git@github.com:OperatorFoundation/ShadowSwift.git", branch: "release"),
+        .package(url: "git@github.com:OperatorFoundation/Starbridge.git", branch: "release")
     ],
     targets: [
         .executableTarget(
