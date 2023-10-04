@@ -36,7 +36,7 @@ struct DandelionController
         
         print("Starting a Dandelion server.")
         
-        guard let dandelionServer = DandelionFrontendServer(config: serverConfig, logger: appLog) else
+        guard let dandelionServer = DandelionServer(config: serverConfig, logger: appLog) else
         {
             return
         }
