@@ -6,6 +6,8 @@
 //
 
 import Foundation
+
+import DandelionServer
 import Transmission
 
 class RoutingController
@@ -45,6 +47,41 @@ class RoutingController
             }
         }
     }
+    
+//    func handleListener(dandelionListener: DandelionServer, targetHost: String, targetPort: Int)
+//    {
+//        print("ShapeshifterDispatcherSwift: RoutingController.handleListener()")
+//        
+//        while true
+//        {
+//            do
+//            {
+//                let transportConnection = try dandelionListener.accept()
+//                print("ShapeshifterDispatcherSwift: listener accepted a transport connection.")
+//                
+//                guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
+//                {
+//                    print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
+//                    appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server.")
+//                    dandelionListener.close()
+//                    continue
+//                }
+//                
+//                print("ShapeshifterDispatcherSwift: target connection created.")
+//                
+//                let route = Router(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
+//                print("ShapeshifterDispatcherSwift: new route created.")
+//                routes.append(route)
+//            }
+//            catch
+//            {
+//                print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to accept a new connection: \(error).")
+//                appLog.error("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: \(error)")
+//                continue
+//            }
+//        }
+//    }
+    
     
     func remove(route: Router)
     {

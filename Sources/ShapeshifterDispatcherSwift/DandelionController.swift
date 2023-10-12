@@ -40,6 +40,11 @@ struct DandelionController
         {
             return
         }
+        
+        let routingController = RoutingController()
+//        routingController.handleListener(listener: dandelionServer, targetHost: targetHost, targetPort: targetPort)
+        
+        print("Listening on port \(serverConfig.serverPort)...")
     }
     
     enum DandelionError: Error
