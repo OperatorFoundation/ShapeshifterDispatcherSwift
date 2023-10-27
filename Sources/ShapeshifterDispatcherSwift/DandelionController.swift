@@ -41,8 +41,11 @@ struct DandelionController
             return
         }
         
-        let routingController = RoutingController()
-//        routingController.handleListener(listener: dandelionServer, targetHost: targetHost, targetPort: targetPort)
+        let routingController = NametagRoutingController()
+        routingController.handleListener(
+            dandelionListener: dandelionServer,
+            targetHost: targetHost,
+            targetPort: targetPort)
         
         print("Listening on port \(serverConfig.serverPort)...")
     }

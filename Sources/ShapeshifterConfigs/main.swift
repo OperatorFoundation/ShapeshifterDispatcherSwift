@@ -9,6 +9,7 @@ import ArgumentParser
 import Foundation
 import Logging
 
+import Dandelion
 import Keychain
 import ReplicantSwift
 import ShadowSwift
@@ -155,35 +156,35 @@ extension ShapeshifterConfig
     }
 }
 
-//extension ShapeshifterConfig
-//{
-//    struct DandelionConfigGenerator: ParsableCommand
-//    {
-//        static let configuration = CommandConfiguration(commandName: "dandelion", abstract: "Generate new config files for the Dandelion transport.")
-//        
-//        @OptionGroup() var parentOptions: Options
-//        
-//        @Option(name: .shortAndLong, help: "The Dandelion public encryption key.")
-//        var key: String
-//        
-//        func run() throws
-//        {
-//            print("Generating Dandelion configuration files...")
-//            
-//            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-//            
-//            guard let publicKey = PublicKey(jsonString: key) else
-//            {
-//                // TODO: Throw
-//                return
-//            }
-//            
-//            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", serverPublicKey: publicKey)
-//            print("New Dandelion config files have been saved to \(saveURL)")
-//            
-//        }
-//    }
-//}
+extension ShapeshifterConfig
+{
+    struct DandelionConfigGenerator: ParsableCommand
+    {
+        static let configuration = CommandConfiguration(commandName: "dandelion", abstract: "Generate new config files for the Dandelion transport.")
+        
+        @OptionGroup() var parentOptions: Options
+        
+        @Option(name: .shortAndLong, help: "The Dandelion public encryption key.")
+        var key: String
+        
+        func run() throws
+        {
+            print("Generating Dandelion configuration files...")
+            
+            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
+            
+            guard let publicKey = PublicKey(jsonString: key) else
+            {
+                // TODO: Throw
+                return
+            }
+            
+            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", serverPublicKey: publicKey)
+            print("New Dandelion config files have been saved to \(saveURL)")
+            
+        }
+    }
+}
 
 public enum ConfigError: Error
 {
