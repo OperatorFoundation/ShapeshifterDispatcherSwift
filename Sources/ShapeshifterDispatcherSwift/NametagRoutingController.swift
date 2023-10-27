@@ -32,8 +32,8 @@ class NametagRoutingController
                     publicKey == transportConnection.publicKey
                 })
                 {
-                    // It is an error to have two simultaneous incoming connections with the same public key
-                    // if this occurs then the connection that arrived later is closed.
+                    /// It is an error to have two simultaneous incoming connections with the same public key
+                    /// if this occurs then the connection that arrived later is closed.
                     
                     print("Dandelion received an incoming connection with a public key we are already tracking. Closing the connection.")
                     transportConnection.network.close()
@@ -41,6 +41,10 @@ class NametagRoutingController
                 }
                 else
                 {
+                    
+                    /// If the public key of the incoming connection is not in the table,
+                    /// a new connection to the target application server is created.
+                    
                     guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
                     {
                         print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
@@ -51,6 +55,7 @@ class NametagRoutingController
                     
                     print("ShapeshifterDispatcherSwift: Dandelion target connection created.")
                     
+                    /// While that incoming connection is open, data is pumped between the incoming connection and the newly opened target application server connection.
                     let route = NametagRouter(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
                     print("ShapeshifterDispatcherSwift: new route created.")
                     
