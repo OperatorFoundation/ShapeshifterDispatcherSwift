@@ -17,7 +17,42 @@ class NametagRouter
     var clientConnection: NametagServerConnection
     let targetConnection: Transmission.Connection
     
+    let clientConnectionTimeout = 60.0 // Seconds
+    var timePaused: Date?
+    
+    var timeSincePaused: TimeInterval
+    {
+        get
+        {
+            if let timePaused = timePaused
+            {
+                let now = Date()
+                let timePassed = now.timeIntervalSince(timePaused)
+                
+                if timePassed > 0
+                {
+                    return timePassed
+                }
+            }
+            
+            return 0.0
+        }
+    }
+    
     var clientConnectionIsActive: Bool
+    {
+        didSet
+        {
+            if !clientConnectionIsActive
+            {
+                timePaused = Date()
+            }
+            else
+            {
+                timePaused = nil
+            }
+        }
+    }
     
     let targetToTransportQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.targetToTransportQueue")
     let transportToTargetQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.transportToTargetQueue")
@@ -44,6 +79,17 @@ class NametagRouter
         
         self.transportToTargetQueue.async {
             self.transferTransportToTarget(transportConnection: transportConnection, targetConnection: targetConnection)
+        }
+        
+        self.cleanupQueue.async 
+        {
+            sleep(20)
+            
+            if self.timeSincePaused >= self.clientConnectionTimeout
+            {
+                print("⏰ Client connection has been paused for more than \(self.clientConnectionTimeout). Closing this connection.")
+                self.cleanup(connectionFinished: true)
+            }
         }
     }
     
@@ -134,7 +180,7 @@ class NametagRouter
         
         if !keepGoing
         {
-            print("Route clean up...")
+            print("Route cleanup...")
             self.clientConnection.network.close()
             self.clientConnectionIsActive = false
             
@@ -145,7 +191,7 @@ class NametagRouter
                 self.targetConnection.close()
             }
             
-            print("Route clean up finished.")
+            print("Route cleanup finished.")
         }
     }
     
