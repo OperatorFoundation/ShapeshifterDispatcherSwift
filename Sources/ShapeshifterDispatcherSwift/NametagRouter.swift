@@ -88,6 +88,7 @@ class NametagRouter
             if self.timeSincePaused >= self.clientConnectionTimeout
             {
                 print("⏰ Client connection has been paused for more than \(self.clientConnectionTimeout). Closing this connection.")
+                self.keepGoing = false
                 self.cleanup(connectionFinished: true)
             }
         }
@@ -191,7 +192,11 @@ class NametagRouter
                 self.targetConnection.close()
             }
             
-            print("Route cleanup finished.")
+            print("🧼 Route cleanup finished.")
+        }
+        else
+        {
+            print("🧼 Cannot cleanup, keepGoing is true!")
         }
     }
     
