@@ -119,7 +119,6 @@ class Router
     func cleanup()
     {
         self.lock.wait()
-        self.lock.wait()
         
         if !keepGoing
         {

@@ -14,8 +14,10 @@ class NametagRouter
 {
     let maxReadSize = 2048 // Could be tuned through testing in the future
     
-    let transportConnection: NametagServerConnection
+    let clientConnection: NametagServerConnection
     let targetConnection: Transmission.Connection
+    
+    var clientConnectionIsActive: Bool
     
     let targetToTransportQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.targetToTransportQueue")
     let transportToTargetQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.transportToTargetQueue")
@@ -30,7 +32,8 @@ class NametagRouter
     init(controller: NametagRoutingController, transportConnection: NametagServerConnection, targetConnection: Transmission.Connection)
     {
         self.controller = controller
-        self.transportConnection = transportConnection
+        self.clientConnection = transportConnection
+        self.clientConnectionIsActive = true
         self.targetConnection = targetConnection
         
         print("ShapeshifterDispatcherSwift: Router Received a new connection")
@@ -46,13 +49,16 @@ class NametagRouter
     
     func transferTargetToTransport(transportConnection: NametagServerConnection, targetConnection: Transmission.Connection)
     {
+        var connectionFinished = true
         print("Target to Transport running...")
+        
         while keepGoing
         {
             guard let dataFromTarget = targetConnection.read(maxSize: maxReadSize) else
             {
                 appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Received no data from the target on read.")
                 keepGoing = false
+                connectionFinished = true
                 break
             }
 
@@ -60,6 +66,7 @@ class NametagRouter
             {
                 appLog.error("ShapeshifterDispatcherSwift: transferTargetToTransport: 0 length data was read - this should not happen")
                 keepGoing = false
+                connectionFinished = true
                 break
             }
                         
@@ -67,6 +74,7 @@ class NametagRouter
             {
                 appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed.")
                 keepGoing = false
+                connectionFinished = false
                 break
             }
         }
@@ -75,11 +83,12 @@ class NametagRouter
         
         print("Target to Transport finished!")
         
-        self.cleanup()
+        self.cleanup(connectionFinished: connectionFinished)
     }
     
     func transferTransportToTarget(transportConnection: NametagServerConnection, targetConnection: Transmission.Connection)
     {
+        var connectionFinished = true
         print("Transport to Target running...")
         
         while keepGoing
@@ -89,6 +98,7 @@ class NametagRouter
             {
                 appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Received no data from the target on read.")
                 keepGoing = false
+                connectionFinished = false
                 break
             }
             
@@ -98,6 +108,7 @@ class NametagRouter
             {
                 appLog.error("ShapeshifterDispatcherSwift: transferTransportToTarget: 0 length data was read - this should not happen")
                 keepGoing = false
+                connectionFinished = false
                 break
             }
             
@@ -105,7 +116,7 @@ class NametagRouter
             {
                 appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Unable to send target data to the target connection. The connection was likely closed.")
                 keepGoing = false
-                
+                connectionFinished = true
                 break
             }
         }
@@ -114,23 +125,30 @@ class NametagRouter
         
         print("Transport to Target finished!")
         
-        self.cleanup()
+        self.cleanup(connectionFinished: connectionFinished)
     }
     
-    func cleanup()
+    func cleanup(connectionFinished: Bool)
     {
-        self.lock.wait()
         self.lock.wait()
         
         if !keepGoing
         {
             print("Route clean up...")
-            self.controller.remove(route: self)
-            self.targetConnection.close()
-            self.transportConnection.network.close()
+            self.clientConnection.network.close()
+            self.clientConnectionIsActive = false
+            
+            if connectionFinished
+            {
+                print("Connection is finished, closing target connection too.")
+                self.controller.remove(route: self)
+                self.targetConnection.close()
+            }
+            
             print("Route clean up finished.")
         }
     }
+    
 }
 
 extension NametagRouter: Equatable

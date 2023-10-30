@@ -41,7 +41,6 @@ class NametagRoutingController
                 }
                 else
                 {
-                    
                     /// If the public key of the incoming connection is not in the table,
                     /// a new connection to the target application server is created.
                     
@@ -75,6 +74,6 @@ class NametagRoutingController
     
     func remove(route: NametagRouter)
     {
-        self.routes.removeValue(forKey: route.transportConnection.publicKey)
+        self.routes.removeValue(forKey: route.clientConnection.publicKey)
     }
 }
