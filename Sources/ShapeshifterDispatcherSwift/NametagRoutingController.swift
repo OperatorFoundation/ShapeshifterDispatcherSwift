@@ -28,16 +28,21 @@ class NametagRoutingController
                 let transportConnection = try dandelionListener.accept()
                 print("ShapeshifterDispatcherSwift: Dandelion listener accepted a transport connection.")
                 
-                if routes.contains(where: { (publicKey, router) in
-                    publicKey == transportConnection.publicKey
-                })
+                if let existingRoute = routes[transportConnection.publicKey]
                 {
-                    /// It is an error to have two simultaneous incoming connections with the same public key
-                    /// if this occurs then the connection that arrived later is closed.
-                    
-                    print("Dandelion received an incoming connection with a public key we are already tracking. Closing the connection.")
-                    transportConnection.network.close()
-                    
+                    if existingRoute.clientConnectionIsActive
+                    {
+                        /// It is an error to have two simultaneous incoming connections with the same public key
+                        /// if this occurs then the connection that arrived later is closed.
+                        
+                        print("Dandelion received an incoming connection with a public key we are already tracking. Closing the connection.")
+                        transportConnection.network.close()
+                    }
+                    else
+                    {
+                        existingRoute.clientConnection = transportConnection
+                        existingRoute.clientConnectionIsActive = true
+                    }
                 }
                 else
                 {

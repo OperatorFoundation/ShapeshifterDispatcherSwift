@@ -14,7 +14,7 @@ class NametagRouter
 {
     let maxReadSize = 2048 // Could be tuned through testing in the future
     
-    let clientConnection: NametagServerConnection
+    var clientConnection: NametagServerConnection
     let targetConnection: Transmission.Connection
     
     var clientConnectionIsActive: Bool
