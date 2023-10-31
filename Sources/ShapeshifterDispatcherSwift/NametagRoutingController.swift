@@ -14,10 +14,9 @@ import Transmission
 
 class NametagRoutingController
 {
-//    var routes = [NametagRouter]()
     var routes = [PublicKey: NametagRouter]()
     
-    func handleListener(dandelionListener: DandelionServer, targetHost: String, targetPort: Int)
+    func handleListener(dandelionListener: DandelionServer, targetHost: String, targetPort: Int) async
     {
         print("ShapeshifterDispatcherSwift: RoutingController.handleListener()")
         
@@ -30,19 +29,7 @@ class NametagRoutingController
                 
                 if let existingRoute = routes[transportConnection.publicKey]
                 {
-                    if existingRoute.clientConnectionIsActive
-                    {
-                        /// It is an error to have two simultaneous incoming connections with the same public key
-                        /// if this occurs then the connection that arrived later is closed.
-                        
-                        print("Dandelion received an incoming connection with a public key we are already tracking. Closing the connection.")
-                        transportConnection.network.close()
-                    }
-                    else
-                    {
-                        existingRoute.clientConnection = transportConnection
-                        existingRoute.clientConnectionIsActive = true
-                    }
+                    try await existingRoute.clientConnected(connection: transportConnection)
                 }
                 else
                 {
@@ -53,14 +40,14 @@ class NametagRoutingController
                     {
                         print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
                         appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server.")
-                        dandelionListener.close()
+                        transportConnection.network.close()
                         continue
                     }
                     
                     print("ShapeshifterDispatcherSwift: Dandelion target connection created.")
                     
                     /// While that incoming connection is open, data is pumped between the incoming connection and the newly opened target application server connection.
-                    let route = NametagRouter(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
+                    let route = await NametagRouter(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
                     print("ShapeshifterDispatcherSwift: new route created.")
                     
                     // We don't already have this public key, save it to our routes
@@ -77,8 +64,8 @@ class NametagRoutingController
     }
     
     
-    func remove(route: NametagRouter)
+    func remove(route: NametagRouter) async
     {
-        self.routes.removeValue(forKey: route.clientConnection.publicKey)
+        await self.routes.removeValue(forKey: route.clientConnection.publicKey)
     }
 }

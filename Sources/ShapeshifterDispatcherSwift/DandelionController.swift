@@ -21,7 +21,7 @@ struct DandelionController
     var bindHost: String
     var bindPort: Int
     
-    func runServer() throws
+    func runServer() async throws
     {
         guard let serverConfig = DandelionConfig.ServerConfig(path: configPath) else
         {
@@ -42,7 +42,7 @@ struct DandelionController
         }
         
         let routingController = NametagRoutingController()
-        routingController.handleListener(
+        await routingController.handleListener(
             dandelionListener: dandelionServer,
             targetHost: targetHost,
             targetPort: targetPort)

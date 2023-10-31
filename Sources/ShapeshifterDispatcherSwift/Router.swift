@@ -118,6 +118,9 @@ class Router
     
     func cleanup()
     {
+        // Wait for both transferTransportToTarget() and transferTargetToTransport
+        // to Signal before proceding
+        self.lock.wait()
         self.lock.wait()
         
         if !keepGoing
