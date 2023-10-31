@@ -354,7 +354,7 @@ struct ShapeshifterDispatcher: ParsableCommand
         }
     }
     
-    func run() async throws
+    func run() throws
     {
         #if canImport(WASILibc)
         // Logger is already setup
@@ -378,7 +378,7 @@ struct ShapeshifterDispatcher: ParsableCommand
                 
                 if serverMode
                 {
-                    try await dandelionController.runServer()
+                    try dandelionController.runServer()
                 }
                 else
                 {

@@ -10,13 +10,15 @@ import Foundation
 import DandelionServer
 import Keychain
 import Transmission
+import TransmissionNametag
 
 
 class NametagRoutingController
 {
     var routes = [PublicKey: NametagRouter]()
+    var connectionQueue = DispatchQueue(label: "NametagClientConnectionQueue")
     
-    func handleListener(dandelionListener: DandelionServer, targetHost: String, targetPort: Int) async
+    func handleListener(dandelionListener: DandelionServer, targetHost: String, targetPort: Int)
     {
         print("ShapeshifterDispatcherSwift: RoutingController.handleListener()")
         
@@ -25,34 +27,22 @@ class NametagRoutingController
             do
             {
                 let transportConnection = try dandelionListener.accept()
-                print("ShapeshifterDispatcherSwift: Dandelion listener accepted a transport connection.")
                 
-                if let existingRoute = routes[transportConnection.publicKey]
+                connectionQueue.async 
                 {
-                    try await existingRoute.clientConnected(connection: transportConnection)
-                }
-                else
-                {
-                    /// If the public key of the incoming connection is not in the table,
-                    /// a new connection to the target application server is created.
-                    
-                    guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
+                    Task
                     {
-                        print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
-                        appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server.")
-                        transportConnection.network.close()
-                        continue
+                        do
+                        {
+                            try await self.handleConnection(clientConnection: transportConnection, targetHost: targetHost, targetPort: targetPort)
+                        }
+                        catch (let clientConnectionError)
+                        {
+                            print("Received an error while accepting a client connection: \(clientConnectionError)")
+                        }
                     }
-                    
-                    print("ShapeshifterDispatcherSwift: Dandelion target connection created.")
-                    
-                    /// While that incoming connection is open, data is pumped between the incoming connection and the newly opened target application server connection.
-                    let route = await NametagRouter(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
-                    print("ShapeshifterDispatcherSwift: new route created.")
-                    
-                    // We don't already have this public key, save it to our routes
-                    routes[transportConnection.publicKey] = route
                 }
+
             }
             catch
             {
@@ -63,6 +53,37 @@ class NametagRoutingController
         }
     }
     
+    func handleConnection(clientConnection: NametagServerConnection, targetHost: String, targetPort: Int) async throws
+    {
+        print("ShapeshifterDispatcherSwift: Dandelion listener accepted a transport connection.")
+        
+        if let existingRoute = routes[clientConnection.publicKey]
+        {
+            try await existingRoute.clientConnected(connection: clientConnection)
+        }
+        else
+        {
+            /// If the public key of the incoming connection is not in the table,
+            /// a new connection to the target application server is created.
+            
+            guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
+            {
+                print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
+                appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server.")
+                clientConnection.network.close()
+                return
+            }
+            
+            print("ShapeshifterDispatcherSwift: Dandelion target connection created.")
+            
+            /// While that incoming connection is open, data is pumped between the incoming connection and the newly opened target application server connection.
+            let route = await NametagRouter(controller: self, transportConnection: clientConnection, targetConnection: targetConnection)
+            print("ShapeshifterDispatcherSwift: new route created.")
+            
+            // We don't already have this public key, save it to our routes
+            routes[clientConnection.publicKey] = route
+        }
+    }
     
     func remove(route: NametagRouter) async
     {

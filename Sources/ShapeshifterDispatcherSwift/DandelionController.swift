@@ -21,7 +21,7 @@ struct DandelionController
     var bindHost: String
     var bindPort: Int
     
-    func runServer() async throws
+    func runServer() throws
     {
         guard let serverConfig = DandelionConfig.ServerConfig(path: configPath) else
         {
@@ -42,12 +42,13 @@ struct DandelionController
         }
         
         let routingController = NametagRoutingController()
-        await routingController.handleListener(
+        print("Listening on port \(serverConfig.serverPort)...")
+
+        routingController.handleListener(
             dandelionListener: dandelionServer,
             targetHost: targetHost,
             targetPort: targetPort)
         
-        print("Listening on port \(serverConfig.serverPort)...")
     }
     
     enum DandelionError: Error
