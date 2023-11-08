@@ -21,14 +21,15 @@ struct ShapeshifterConfig: ParsableCommand
         abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher",
         subcommands: [ShadowConfigGenerator.self,
                       StarbridgeConfigGenerator.self,
-                      ReplicantConfigGenerator.self])
+                      ReplicantConfigGenerator.self,
+                      DandelionConfigGenerator.self])
     
     struct Options: ParsableArguments
     {
-        @Option(name: .shortAndLong, help: "Specifies the <ip_address> of the Shadow server.")
+        @Option(name: .shortAndLong, help: "Specifies the <ip_address> that the server will have.")
         var host: String
         
-        @Option(name: .shortAndLong, help: "Specifies the <port> the Shadow server should listen on.")
+        @Option(name: .shortAndLong, help: "Specifies the <port> the server should listen on.")
         var port: UInt16
         
         @Option(name: .shortAndLong, help: "Specifies the directory the configs should be saved to.")
@@ -189,10 +190,7 @@ extension ShapeshifterConfig
 public enum ConfigError: Error
 {
     case savePathIsNotDirectory(savePath: String)
-}
-
-extension ConfigError: CustomStringConvertible
-{
+    
     public var description: String
     {
         switch self
@@ -206,10 +204,7 @@ extension ConfigError: CustomStringConvertible
 public enum ShadowError: Error
 {
     case cipherModeNotSupported(cipherString: String)
-}
-
-extension ShadowError: CustomStringConvertible
-{
+    
     public var description: String
     {
         switch self
