@@ -52,6 +52,7 @@ struct ShapeshifterConfig: ParsableCommand
     init() { }
 }
 
+// MARK: Shadow
 extension ShapeshifterConfig
 {
     struct ShadowConfigGenerator: ParsableCommand
@@ -103,6 +104,7 @@ extension ShapeshifterConfig
     }
 }
 
+// MARK: Starbridge
 extension ShapeshifterConfig
 {
     struct StarbridgeConfigGenerator: ParsableCommand
@@ -130,6 +132,7 @@ extension ShapeshifterConfig
     }
 }
 
+// MARK: Replicant
 extension ShapeshifterConfig
 {
     struct ReplicantConfigGenerator: ParsableCommand
@@ -157,6 +160,7 @@ extension ShapeshifterConfig
     }
 }
 
+// MARK: Dandelion
 extension ShapeshifterConfig
 {
     struct DandelionConfigGenerator: ParsableCommand
@@ -187,6 +191,7 @@ extension ShapeshifterConfig
     }
 }
 
+// MARK: Errors
 public enum ConfigError: Error
 {
     case savePathIsNotDirectory(savePath: String)
