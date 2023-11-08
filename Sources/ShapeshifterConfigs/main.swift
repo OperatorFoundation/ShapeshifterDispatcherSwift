@@ -165,8 +165,8 @@ extension ShapeshifterConfig
         
         @OptionGroup() var parentOptions: Options
         
-        @Option(name: .shortAndLong, help: "The Dandelion public encryption key.")
-        var key: String
+//        @Option(name: .shortAndLong, help: "The Dandelion public encryption key.")
+//        var key: String
         
         func run() throws
         {
@@ -174,13 +174,13 @@ extension ShapeshifterConfig
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
             
-            guard let publicKey = PublicKey(jsonString: key) else
-            {
-                // TODO: Throw
-                return
-            }
+//            guard let publicKey = PublicKey(jsonString: key) else
+//            {
+//                // TODO: Throw
+//                return
+//            }
             
-            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", serverPublicKey: publicKey)
+            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
             print("New Dandelion config files have been saved to \(saveURL)")
             
         }
