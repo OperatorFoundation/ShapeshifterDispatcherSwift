@@ -11,6 +11,7 @@ let package = Package(
     dependencies: [
         .package(url: "git@github.com:apple/swift-argument-parser.git", from: "1.2.3"),
         .package(url: "git@github.com:OperatorFoundation/Dandelion.git", branch: "main"),
+        .package(url: "git@github.com:OperatorFoundation/Gardener.git", branch: "main"),
         .package(url: "git@github.com:OperatorFoundation/Nametag.git", branch: "main"),
         .package(url: "git@github.com:OperatorFoundation/ReplicantSwift.git", branch: "main"),
         .package(url: "git@github.com:OperatorFoundation/ShadowSwift.git", branch: "main"),
@@ -33,6 +34,7 @@ let package = Package(
             name: "ShapeshifterConfigs",
             dependencies: [
                 "Dandelion",
+                "Gardener",
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",

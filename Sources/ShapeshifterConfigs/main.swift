@@ -10,6 +10,7 @@ import Foundation
 import Logging
 
 import Dandelion
+import Gardener
 import Keychain
 import ReplicantSwift
 import ShadowSwift
@@ -168,25 +169,20 @@ extension ShapeshifterConfig
         static let configuration = CommandConfiguration(commandName: "dandelion", abstract: "Generate new config files for the Dandelion transport.")
         
         @OptionGroup() var parentOptions: Options
-        
-//        @Option(name: .shortAndLong, help: "The Dandelion public encryption key.")
-//        var key: String
+        @Flag(help: "Whether or not to overwrite any existing config files and encryption keys.")
+        var overwrite = false
         
         func run() throws
         {
             print("Generating Dandelion configuration files...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
+            let keychainDirectoryURL = File.homeDirectory().appendingPathComponent(".Dandelion-server")
+            let keychainLabel = "DandelionServer.KeyAgreement"
             
-//            guard let publicKey = PublicKey(jsonString: key) else
-//            {
-//                // TODO: Throw
-//                return
-//            }
-            
-            try DandelionConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
+            try DandelionConfig.generateNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", keychainURL: keychainDirectoryURL, keychainLabel: keychainLabel, overwriteKey: overwrite)
+
             print("New Dandelion config files have been saved to \(saveURL)")
-            
         }
     }
 }
