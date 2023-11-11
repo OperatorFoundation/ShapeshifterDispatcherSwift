@@ -11,7 +11,6 @@ import Logging
 
 import Dandelion
 import Gardener
-import Keychain
 import ReplicantSwift
 import ShadowSwift
 import Starbridge
