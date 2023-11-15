@@ -31,7 +31,7 @@ class NametagPumpToClient
     
     func transferTargetToTransport(transportConnection: AsyncNametagServerConnection, targetConnection: AsyncConnection) async
     {
-        print("Target to Transport running...")
+        print("Dandelion: Target to Transport running...")
         
         
         while await router.state == .active
@@ -64,6 +64,8 @@ class NametagPumpToClient
                 await router.serverClosed()
                 break
             }
+            
+            await Task.yield() // Take turns
         }
         
         print("Server to client loop finished.")
