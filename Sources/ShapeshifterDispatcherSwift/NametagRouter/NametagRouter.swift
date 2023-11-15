@@ -7,8 +7,8 @@
 
 import Foundation
 
-import Transmission
-import TransmissionNametag
+import TransmissionAsync
+import TransmissionAsyncNametag
 
 actor NametagRouter
 {
@@ -23,15 +23,15 @@ actor NametagRouter
     
     // MARK: Shared State
     
-    var clientConnection: NametagServerConnection
-    let targetConnection: Transmission.Connection
+    var clientConnection: AsyncNametagServerConnection
+    let targetConnection: AsyncConnection
     let controller: NametagRoutingController
     var clientConnectionCount = 1
     var state: NametagRouterState = .active
     
     // MARK: End Shared State
     
-    init(controller: NametagRoutingController, transportConnection: NametagServerConnection, targetConnection: Transmission.Connection) async
+    init(controller: NametagRoutingController, transportConnection: AsyncNametagServerConnection, targetConnection: AsyncConnection) async
     {
         self.controller = controller
         self.clientConnection = transportConnection
@@ -42,14 +42,14 @@ actor NametagRouter
         self.clientPump = NametagPumpToClient(router: self)
     }
     
-    func clientConnected(connection: NametagServerConnection) async throws
+    func clientConnected(connection: AsyncNametagServerConnection) async throws
     {
         switch state 
         {
             case .closing:
                 print("ERROR: Currently closing new connections cannot be accepted.")
-                connection.network.close()
                 self.state = .closing
+                try await connection.network.close()
                 throw NametagRouterError.connectionWhileClosing
                 
             case .paused:
@@ -58,8 +58,8 @@ actor NametagRouter
                 self.connectionReaper = nil
                 
             case .active:
-                connection.network.close()
                 self.state = .closing
+                try await connection.network.close()
                 throw NametagRouterError.connectionWhileActive
         }
     }

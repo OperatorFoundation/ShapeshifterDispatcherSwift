@@ -13,6 +13,7 @@ import DandelionServer
 
 struct DandelionController
 {
+    var dandelionLog = Logger(label: "DandelionLogger")
     var configPath: String
     
     var targetHost: String
@@ -36,12 +37,12 @@ struct DandelionController
         
         print("Starting a Dandelion server.")
         
-        guard let dandelionServer = DandelionServer(config: serverConfig, logger: appLog) else
+        guard let dandelionServer = DandelionServer(config: serverConfig, logger: dandelionLog) else
         {
             return
         }
         
-        let routingController = NametagRoutingController()
+        let routingController = NametagRoutingController(logger: dandelionLog)
         print("Listening on port \(serverConfig.serverPort)...")
 
         routingController.handleListener(

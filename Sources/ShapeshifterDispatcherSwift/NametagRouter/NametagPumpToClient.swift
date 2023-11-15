@@ -7,8 +7,8 @@
 
 import Foundation
 
-import Transmission
-import TransmissionNametag
+import TransmissionAsync
+import TransmissionAsyncNametag
 
 
 class NametagPumpToClient
@@ -32,31 +32,39 @@ class NametagPumpToClient
         }
     }
     
-    func transferTargetToTransport(transportConnection: NametagServerConnection, targetConnection: Transmission.Connection) async
+    func transferTargetToTransport(transportConnection: AsyncNametagServerConnection, targetConnection: AsyncConnection) async
     {
         print("Target to Transport running...")
         
         
         while await router.state == .active
         {
-            guard let dataFromTarget = targetConnection.read(maxSize: NametagRouter.maxReadSize) else
+            do
             {
-                appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Received no data from the target on read.")
-                await router.serverClosed()
-                break
+                let dataFromTarget = try await targetConnection.readMaxSize(NametagRouter.maxReadSize)
+                
+                guard dataFromTarget.count > 0 else
+                {
+                    appLog.error("ShapeshifterDispatcherSwift: transferTargetToTransport: 0 length data was read - this should not happen")
+                    await router.serverClosed()
+                    break
+                }
+                            
+                do
+                {
+                    try await transportConnection.network.write(dataFromTarget)
+                }
+                catch (let error)
+                {
+                    appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(error)")
+                    await router.clientClosed()
+                    break
+                }
             }
-
-            guard dataFromTarget.count > 0 else
+            catch (let error)
             {
-                appLog.error("ShapeshifterDispatcherSwift: transferTargetToTransport: 0 length data was read - this should not happen")
+                appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Received no data from the target on read. Error: \(error)")
                 await router.serverClosed()
-                break
-            }
-                        
-            guard transportConnection.network.write(data: dataFromTarget) else
-            {
-                appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed.")
-                await router.clientClosed()
                 break
             }
         }
