@@ -21,13 +21,10 @@ class NametagPumpToServer
     {
         self.router = router
         
-        self.transportToTargetQueue.async 
+        Task
         {
-            Task
-            {
-                print("NametagPumpToServer: calling transferTransportToTarget()")
-                await self.transferTransportToTarget(transportConnection: router.clientConnection, targetConnection: router.targetConnection)
-            }
+            print("NametagPumpToServer: calling transferTransportToTarget()")
+            await self.transferTransportToTarget(transportConnection: router.clientConnection, targetConnection: router.targetConnection)
         }
     }
     
