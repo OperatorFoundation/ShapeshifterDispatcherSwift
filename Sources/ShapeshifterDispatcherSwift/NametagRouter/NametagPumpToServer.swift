@@ -35,6 +35,7 @@ class NametagPumpToServer
         while await router.state == .active
         {
             print("transferTransportToTarget: Attempting to read...")
+            await Task.yield() // Take turns y'all
             
 //            do
 //            {
