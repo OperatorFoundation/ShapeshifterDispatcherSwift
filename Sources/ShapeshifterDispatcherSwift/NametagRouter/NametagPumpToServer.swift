@@ -24,7 +24,7 @@ class NametagPumpToServer
         Task
         {
             print("NametagPumpToServer: calling transferTransportToTarget()")
-//            await self.transferTransportToTarget(transportConnection: router.clientConnection, targetConnection: router.targetConnection)
+            await self.transferTransportToTarget(transportConnection: router.clientConnection, targetConnection: router.targetConnection)
         }
     }
     
@@ -36,35 +36,35 @@ class NametagPumpToServer
         {
             print("transferTransportToTarget: Attempting to read...")
             
-            do
-            {
-                let dataFromTransport = try await transportConnection.network.readMaxSize(NametagRouter.maxReadSize)
-                print("transferTransportToTarget: Finished reading.")
-                
-                guard dataFromTransport.count > 0 else
-                {
-                    appLog.error("ShapeshifterDispatcherSwift: transferTransportToTarget: 0 length data was read - this should not happen")
-                    await router.clientClosed()
-                    break
-                }
-                
-                do
-                {
-                    try await targetConnection.write(dataFromTransport)
-                }
-                catch (let error)
-                {
-                    appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Unable to send target data to the target connection. The connection was likely closed. Error: \(error)")
-                    await router.serverClosed()
-                    break
-                }
-            }
-            catch (let error)
-            {
-                appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Received no data from the target on read. Error: \(error)")
-                await router.clientClosed()
-                break
-            }
+//            do
+//            {
+//                let dataFromTransport = try await transportConnection.network.readMaxSize(NametagRouter.maxReadSize)
+//                print("transferTransportToTarget: Finished reading.")
+//                
+//                guard dataFromTransport.count > 0 else
+//                {
+//                    appLog.error("ShapeshifterDispatcherSwift: transferTransportToTarget: 0 length data was read - this should not happen")
+//                    await router.clientClosed()
+//                    break
+//                }
+//                
+//                do
+//                {
+//                    try await targetConnection.write(dataFromTransport)
+//                }
+//                catch (let error)
+//                {
+//                    appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Unable to send target data to the target connection. The connection was likely closed. Error: \(error)")
+//                    await router.serverClosed()
+//                    break
+//                }
+//            }
+//            catch (let error)
+//            {
+//                appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Received no data from the target on read. Error: \(error)")
+//                await router.clientClosed()
+//                break
+//            }
         }
     }
 }
