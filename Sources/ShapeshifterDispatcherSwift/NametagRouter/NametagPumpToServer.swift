@@ -39,13 +39,11 @@ class NametagPumpToServer
             do
             {
                 let dataFromTransport = try await transportConnection.network.readMaxSize(NametagRouter.maxReadSize)
-                print("transferTransportToTarget: Finished reading.")
+                print("NametagPumpToServer - transferTransportToTarget: read \(dataFromTransport.count) bytes.")
                 
                 guard dataFromTransport.count > 0 else
                 {
-                    appLog.error("ShapeshifterDispatcherSwift: transferTransportToTarget: 0 length data was read - this should not happen")
-                    await router.clientClosed()
-                    break
+                    continue
                 }
                 
                 do

@@ -42,9 +42,8 @@ class NametagPumpToClient
                 
                 guard dataFromTarget.count > 0 else
                 {
-                    appLog.error("ShapeshifterDispatcherSwift: transferTargetToTransport: 0 length data was read - this should not happen")
-                    await router.serverClosed()
-                    break
+                    // Skip to the next round
+                    continue
                 }
                             
                 do
