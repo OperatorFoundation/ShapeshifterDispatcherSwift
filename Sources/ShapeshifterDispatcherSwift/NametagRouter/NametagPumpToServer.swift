@@ -61,6 +61,7 @@ class NametagPumpToServer
             }
             catch (let error)
             {
+                print("ShapeshifterDispatcherSwift: transferTransportToTarget: Received no data from the target on read. Error: \(error)")
                 appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Received no data from the target on read. Error: \(error)")
                 await router.clientClosed()
                 break
