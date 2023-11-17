@@ -66,7 +66,8 @@ actor NametagRouter
     
     func clientClosed() async
     {
-        switch state 
+        print("NametagRouter: clientClosed() called.")
+        switch state
         {
             case .closing:
                 state = .closing
@@ -77,13 +78,27 @@ actor NametagRouter
                 self.connectionReaper = await NametagConnectionReaper(router: self)
         }
         
-        await cleaner?.cleanup()
+        guard let cleaner = cleaner else
+        {
+            print("Trying to cleanup but the cleaner is nil!")
+            return
+        }
+        
+        await cleaner.cleanup()
     }
     
     func serverClosed() async
     {
+        print("NametagRouter: serverClosed() called.")
         state = .closing
-        await cleaner?.cleanup()
+        
+        guard let cleaner = cleaner else
+        {
+            print("Trying to cleanup but the cleaner is nil!")
+            return
+        }
+        
+        await cleaner.cleanup()
     }
 }
 

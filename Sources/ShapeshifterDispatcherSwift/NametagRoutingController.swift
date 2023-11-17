@@ -36,22 +36,20 @@ class NametagRoutingController
             {
                 let transportConnection = try AsyncAwaitThrowingSynchronizer<AsyncConnection>.sync
                 {
-                    try await dandelionListener.accept()
+                    let connection = try await dandelionListener.accept()
+                    print("Accepted a connection.")
+                    return connection
                 }
                 
-                
-                connectionQueue.async 
+                Task
                 {
-                    Task
+                    do
                     {
-                        do
-                        {
-                            try await self.handleConnection(clientConnection: transportConnection, targetHost: targetHost, targetPort: targetPort)
-                        }
-                        catch (let clientConnectionError)
-                        {
-                            print("Received an error while accepting a client connection: \(clientConnectionError)")
-                        }
+                        try await self.handleConnection(clientConnection: transportConnection, targetHost: targetHost, targetPort: targetPort)
+                    }
+                    catch (let clientConnectionError)
+                    {
+                        print("Received an error while accepting a client connection: \(clientConnectionError)")
                     }
                 }
 
