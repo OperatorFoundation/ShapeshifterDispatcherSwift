@@ -75,7 +75,7 @@ actor NametagRouter
                 state = .paused
             case .active:
                 state = .paused
-                self.connectionReaper = await NametagConnectionReaper(router: self)
+//                self.connectionReaper = await NametagConnectionReaper(router: self)
         }
         
         guard let cleaner = cleaner else

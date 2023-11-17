@@ -15,6 +15,7 @@ class NametagPumpToClient
 {
     let targetToTransportQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.targetToTransportQueue")
     
+    var bufferedDataForClient: Data? = nil
     var router: NametagRouter
     
     
@@ -33,6 +34,22 @@ class NametagPumpToClient
     {
         print("Dandelion: Target to Transport running...")
         
+        // Check to see if we have data waiting for the client from a previous session
+        // Send it if we do and clear it out when we are done
+        if let dataWaiting = bufferedDataForClient
+        {
+            do
+            {
+                try await transportConnection.network.write(dataWaiting)
+                bufferedDataForClient = nil
+            }
+            catch (let error)
+            {
+                appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(error)")
+                await router.clientClosed()
+                return
+            }
+        }
         
         while await router.state == .active
         {
