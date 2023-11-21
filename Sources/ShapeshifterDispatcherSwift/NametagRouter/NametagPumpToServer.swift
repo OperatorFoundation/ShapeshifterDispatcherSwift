@@ -38,7 +38,7 @@ class NametagPumpToServer
             
             do
             {
-                let dataFromTransport = try await transportConnection.network.readMaxSize(NametagRouter.maxReadSize)
+                let dataFromTransport = try await transportConnection.network.readMinMaxSize(1, NametagRouter.maxReadSize)
                 print("NametagPumpToServer - transferTransportToTarget: read \(dataFromTransport.count) bytes.")
                 
                 guard dataFromTransport.count > 0 else
