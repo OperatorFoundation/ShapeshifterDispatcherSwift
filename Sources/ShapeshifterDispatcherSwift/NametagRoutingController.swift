@@ -36,6 +36,7 @@ class NametagRoutingController
             {
                 let transportConnection = try AsyncAwaitThrowingSynchronizer<AsyncConnection>.sync
                 {
+                    print("Accepting...")
                     let connection = try await dandelionListener.accept()
                     print("Accepted a connection.")
                     return connection
