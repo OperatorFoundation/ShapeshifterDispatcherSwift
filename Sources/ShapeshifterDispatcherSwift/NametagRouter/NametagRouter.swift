@@ -28,14 +28,16 @@ actor NametagRouter
     let controller: NametagRoutingController
     var clientConnectionCount = 1
     var state: NametagRouterState = .active
+    var bufferedDataForClient: Data? = nil
     
     // MARK: End Shared State
     
-    init(controller: NametagRoutingController, transportConnection: AsyncNametagServerConnection, targetConnection: AsyncConnection) async
+    init(controller: NametagRoutingController, transportConnection: AsyncNametagServerConnection, targetConnection: AsyncConnection, buffer: Data? = nil) async
     {
         self.controller = controller
         self.clientConnection = transportConnection
         self.targetConnection = targetConnection
+        self.bufferedDataForClient = buffer
 
         self.cleaner = NametagRouterCleanup(router: self)
         self.serverPump = NametagPumpToServer(router: self)
@@ -99,6 +101,11 @@ actor NametagRouter
         }
         
         await cleaner.cleanup()
+    }
+    
+    func updateBuffer(data: Data?)
+    {
+        self.bufferedDataForClient = data
     }
 }
 

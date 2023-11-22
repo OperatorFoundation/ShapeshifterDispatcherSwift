@@ -45,15 +45,19 @@ class Router
     
     func transferTargetToTransport(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection)
     {
-        print("Target to Transport running...")
+        print("Target to Transport started")
         while keepGoing
         {
+            print("transferTargetToTransport: Attempting to read from the target connection...")
+            
             guard let dataFromTarget = targetConnection.read(maxSize: maxReadSize) else
             {
                 appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Received no data from the target on read.")
                 keepGoing = false
                 break
             }
+            
+            print("transferTargetToTransport: read \(dataFromTarget.count) bytes")
 
             guard dataFromTarget.count > 0 else
             {
@@ -79,19 +83,19 @@ class Router
     
     func transferTransportToTarget(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection)
     {
-        print("Transport to Target running...")
+        print("Transport to Target started")
         
         while keepGoing
         {
-            print("transferTransportToTarget: Attempting to read...")
+            print("transferTransportToTarget: Attempting to read from the client connection...")
             guard let dataFromTransport = transportConnection.read(maxSize: maxReadSize) else
             {
-                appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Received no data from the target on read.")
+                appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Received no data from the client on read.")
                 keepGoing = false
                 break
             }
             
-            print("transferTransportToTarget: Finished reading.")
+            print("transferTransportToTarget: read \(dataFromTransport.count) bytes")
             
             guard dataFromTransport.count > 0 else
             {
