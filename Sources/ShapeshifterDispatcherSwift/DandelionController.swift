@@ -42,14 +42,13 @@ struct DandelionController
             return
         }
         
-        let routingController = NametagRoutingController(logger: dandelionLog)
+        let routingController = DandelionRoutingController(logger: dandelionLog)
         print("Listening on port \(serverConfig.serverPort)...")
 
         routingController.handleListener(
             dandelionListener: dandelionServer,
             targetHost: targetHost,
             targetPort: targetPort)
-        
     }
     
     enum DandelionError: Error
