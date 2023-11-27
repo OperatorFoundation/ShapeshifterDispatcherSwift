@@ -15,8 +15,6 @@ class RoutingController
     
     func handleListener(listener: Transmission.Listener, targetHost: String, targetPort: Int)
     {
-        print("ShapeshifterDispatcherSwift: RoutingController.handleListener()")
-        
         while true
         {
             do
