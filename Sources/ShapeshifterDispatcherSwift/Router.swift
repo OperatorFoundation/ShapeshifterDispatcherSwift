@@ -65,13 +65,16 @@ class Router
                 keepGoing = false
                 break
             }
-                        
+            
+            print("transferTargetToTransport: writing to the transport connection...")
             guard transportConnection.write(data: dataFromTarget) else
             {
                 appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed.")
                 keepGoing = false
                 break
             }
+            
+            print("transferTargetToTransport: wrote \(dataFromTarget.count) bytes to the transport connection.")
         }
         
         self.lock.signal()
@@ -104,6 +107,7 @@ class Router
                 break
             }
             
+            print("transferTransportToTarget: writing to the target connection...")
             guard targetConnection.write(data: dataFromTransport) else
             {
                 appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Unable to send target data to the target connection. The connection was likely closed.")
@@ -111,6 +115,8 @@ class Router
                 
                 break
             }
+            
+            print("transferTransportToTarget: wrote \(dataFromTransport.count) bytes to the target connection.")
         }
         
         self.lock.signal()
