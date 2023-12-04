@@ -9,16 +9,16 @@ let package = Package(
         .macOS(.v13)
     ],
     dependencies: [
-        .package(url: "git@github.com:apple/swift-argument-parser.git", from: "1.2.3"),
-        .package(url: "git@github.com:OperatorFoundation/Chord.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/Dandelion.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/Gardener.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/Nametag.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/ReplicantSwift.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/ShadowSwift.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/Starbridge.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/Transmission.git", branch: "main"),
-        .package(url: "git@github.com:OperatorFoundation/TransmissionAsync.git", branch: "main")
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.3"),
+        .package(url: "https://github.com/OperatorFoundation/Chord", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Dandelion", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Gardener", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Nametag", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/ShadowSwift", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Starbridge", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Transmission", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionAsync", branch: "main")
     ],
     targets: [
         .executableTarget(
