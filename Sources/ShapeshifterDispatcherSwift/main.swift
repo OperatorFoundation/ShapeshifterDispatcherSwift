@@ -7,20 +7,12 @@
 
 import ArgumentParser
 import Foundation
-#if os(macOS) || os(iOS)
-import os.log
-#else
 import Logging
-#endif
 
 import ShadowSwift
 
 let supportedPTVersion = "3.0"
-#if os(macOS) || os(iOS)
-var appLog = Logger(subsystem: "ShapeshifterDispatcherSwift", category: "main")
-#else
 var appLog = Logger(label: "ShapeshifterDispatcherSwift")
-#endif
 
 // TODO: Refactor to use the exact arguments that dispatcher needs according to the spec
 struct ShapeshifterDispatcher: ParsableCommand

@@ -40,7 +40,8 @@ struct ReplicantController
         }
         
         let routingController = RoutingController()
-        routingController.handleListener(listener: replicantListener, targetHost: targetHost, targetPort: targetPort)
+        // FIXME: RoutingController that is not async
+//        routingController.handleListener(listener: replicantListener, targetHost: targetHost, targetPort: targetPort)
     }
     
     enum Error: LocalizedError
