@@ -7,14 +7,14 @@
 
 import Foundation
 
-import TransmissionAsync
+import Transmission
 
 class Router
 {
     public let maxReadSize = 2048 // Could be tuned through testing in the future
     
-    let transportConnection: AsyncConnection
-    let targetConnection: AsyncConnection
+    let transportConnection: Transmission.Connection
+    let targetConnection: Transmission.Connection
     
     var targetToTransportTask: Task<(), Never>? = nil
     var transportToTargetTask: Task<(), Never>? = nil
@@ -25,7 +25,7 @@ class Router
     
     var keepGoing = true
     
-    init(controller: RoutingController, transportConnection: AsyncConnection, targetConnection: AsyncConnection)
+    init(controller: RoutingController, transportConnection: Transmission.Connection, targetConnection: Transmission.Connection)
     {
         self.controller = controller
         self.transportConnection = transportConnection
@@ -45,46 +45,40 @@ class Router
 
     }
     
-    func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
+    func transferTargetToTransport(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection) async
     {
         print("Target to Transport started")
         while keepGoing
         {
             print("Attempting to read from the target connection...")
-            do
+            guard let dataFromTarget = targetConnection.read(maxSize: maxReadSize) else
             {
-                let dataFromTarget = try await targetConnection.readMaxSize(maxReadSize)
-
-                guard dataFromTarget.count > 0 else
-                {
-                    appLog.error("Read 0 bytes from the target connection.")
-                    print("Read 0 bytes from the target connection.")
-                    keepGoing = false
-                    break
-                }
-                print("Read \(dataFromTarget.count) bytes from the target connection.")
-                
-                print("transferTargetToTransport: writing to the transport connection...")
-                do
-                {
-                    try await transportConnection.write(dataFromTarget)
-                }
-                catch (let writeError)
-                {
-                    print("Failed to write to the transport connection. Error: \(writeError)")
-                    appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
-                    keepGoing = false
-                    break
-                }
-                
-                print("Wrote \(dataFromTarget.count) bytes to the transport connection.")
-            }
-            catch (let readError)
-            {
-                appLog.debug("Failed to read from the target connection. Error: \(readError).")
+                appLog.error("Read from the target connection returned a nil result.")
+                print("Read from the target connection returned a nil result.")
                 keepGoing = false
                 break
             }
+
+            guard dataFromTarget.count > 0 else
+            {
+                appLog.error("Read 0 bytes from the target connection.")
+                print("Read 0 bytes from the target connection.")
+                keepGoing = false
+                break
+            }
+            print("Read \(dataFromTarget.count) bytes from the target connection.")
+            
+            print("transferTargetToTransport: writing to the transport connection...")
+
+            guard transportConnection.write(data: dataFromTarget) else
+            {
+                print("Failed to write to the transport connection.")
+                appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed.")
+                keepGoing = false
+                break
+            }
+            
+            print("Wrote \(dataFromTarget.count) bytes to the transport connection.")
             
             await Task.yield() // Take turns
         }
@@ -94,47 +88,40 @@ class Router
         self.cleanup()
     }
     
-    func transferTransportToTarget(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
+    func transferTransportToTarget(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection) async
     {
         print("Transport to Target started")
         
         while keepGoing
         {
             print("transferTransportToTarget: Attempting to read from the client connection...")
-            do
+            guard let dataFromTransport = transportConnection.read(maxSize: maxReadSize) else
             {
-                let dataFromTransport = try await transportConnection.readMaxSize(maxReadSize)
-                
-                guard dataFromTransport.count > 0 else
-                {
-                    print("Read 0 bytes from the transport connection.")
-                    appLog.error("Read 0 bytes from the transport connection.")
-                    keepGoing = false
-                    break
-                }
-                
-                print("Read \(dataFromTransport.count) bytes from the transport connection.")
-                
-                do
-                {
-                    try await targetConnection.write(dataFromTransport)
-                }
-                catch (let writeError)
-                {
-                    print("Failed to write to the target connection. Error: \(writeError)")
-                    appLog.debug("Failed to write to the target connection. Error: \(writeError)")
-                    keepGoing = false
-                    break
-                }
-                
-                print("Wrote \(dataFromTransport.count) bytes to the target connection.")
-            }
-            catch (let readError)
-            {
-                appLog.debug("Failed to read from the transport connection. Error: \(readError)")
+                appLog.error("Read from the transport connection returned a nil result.")
+                print("Read from the target connection returned a nil result.")
                 keepGoing = false
                 break
             }
+            
+            guard dataFromTransport.count > 0 else
+            {
+                print("Read 0 bytes from the transport connection.")
+                appLog.error("Read 0 bytes from the transport connection.")
+                keepGoing = false
+                break
+            }
+            
+            print("Read \(dataFromTransport.count) bytes from the transport connection.")
+            
+            guard targetConnection.write(data: dataFromTransport) else
+            {
+                print("Failed to write to the target connection.")
+                appLog.debug("Failed to write to the target connection.")
+                keepGoing = false
+                break
+            }
+            
+            print("Wrote \(dataFromTransport.count) bytes to the target connection.")
             
             await Task.yield() // Take turns
         }

@@ -37,21 +37,17 @@ struct ShadowController
         
         print("Starting a shadow server using cipher mode: \(shadowConfig.mode)")
         
-//        ShadowServer(host: bindHost, port: bindPort, config: shadowConfig, logger: appLog)
-        do
+        guard let shadowListener = ShadowServer(config: shadowConfig, logger: appLog) else
         {
-            let shadowListener = try AsyncDarkstarListener(config: shadowConfig, logger: appLog)
-            let routingController = RoutingController()
-            
-            print("Listening at \(shadowConfig.serverIP) on port \(shadowConfig.serverPort)...")
-            
-            routingController.handleListener(listener: shadowListener, targetHost: targetHost, targetPort: targetPort)
-        }
-        catch (let listenerError)
-        {
-            appLog.error("Shapeshifter Failed to initialize a ShadowServer with the config provided. Error: \(listenerError)")
+            appLog.error("Shapeshifter Failed to initialize a ShadowServer with the config provided.")
             return
         }
+        
+        let routingController = RoutingController()
+        
+        print("Listening at \(shadowConfig.serverIP) on port \(shadowConfig.serverPort)...")
+        
+        routingController.handleListener(listener: shadowListener, targetHost: targetHost, targetPort: targetPort)
     }
     
     enum ShadowError: Error

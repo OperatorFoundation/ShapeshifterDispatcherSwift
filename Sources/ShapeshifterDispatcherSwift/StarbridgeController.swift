@@ -43,7 +43,6 @@ struct StarbridgeController
         print("Listening...")
         
         let routingController = RoutingController()
-        // FIXME: Routing controller that is not async
-//        routingController.handleListener(listener: starbridgeListener, targetHost: targetHost, targetPort: targetPort)
+        routingController.handleListener(listener: starbridgeListener, targetHost: targetHost, targetPort: targetPort)
     }
 }
