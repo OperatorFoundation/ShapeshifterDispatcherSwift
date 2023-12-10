@@ -9,7 +9,7 @@ let package = Package(
         .macOS(.v13)
     ],
     dependencies: [
-        .package(url: "git@github.com:apple/swift-argument-parser.git", from: "1.2.3"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.3"),
         .package(url: "https://github.com/OperatorFoundation/Chord.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Dandelion.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "main"),
