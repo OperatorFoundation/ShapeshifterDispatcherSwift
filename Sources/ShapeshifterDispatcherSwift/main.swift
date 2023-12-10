@@ -7,20 +7,12 @@
 
 import ArgumentParser
 import Foundation
-#if os(macOS) || os(iOS)
-import os.log
-#else
 import Logging
-#endif
 
 import ShadowSwift
 
 let supportedPTVersion = "3.0"
-#if os(macOS) || os(iOS)
-var appLog = Logger(subsystem: "ShapeshifterDispatcherSwift", category: "main")
-#else
 var appLog = Logger(label: "ShapeshifterDispatcherSwift")
-#endif
 
 // TODO: Refactor to use the exact arguments that dispatcher needs according to the spec
 struct ShapeshifterDispatcher: ParsableCommand
@@ -94,7 +86,7 @@ struct ShapeshifterDispatcher: ParsableCommand
      shapeshifter-dispatcher -transport shadow
      */
     enum TransportType: String, CaseIterable, ExpressibleByArgument {
-           case replicant, shadow, starbridge
+           case dandelion, replicant, shadow, starbridge
     }
     @Option(name: .customLong("transport", withSingleDash: true), help: "Specifies the name of the PT to use.")
     var transport: TransportType
@@ -368,22 +360,31 @@ struct ShapeshifterDispatcher: ParsableCommand
                 
         switch (transport)
         {
-            case .shadow:
-                let shadowController = ShadowController(configPath: optionsDir, targetHost: targetHost, targetPort: targetPort, bindHost: bindHost, bindPort: bindPort)
+            case .dandelion:
+                let dandelionController = DandelionController(
+                    configPath: optionsDir,
+                    targetHost: targetHost,
+                    targetPort: targetPort,
+                    bindHost: bindHost,
+                    bindPort: bindPort)
                 
                 if serverMode
                 {
-                    try shadowController.runServer()
+                    try dandelionController.runServer()
                 }
                 else
                 {
-                    appLog.error("Currently only server mode is supported.")
+                    appLog.error("Currently only server mode is supported for the Dandelion transport.")
                     return
                 }
                 
-                
             case .replicant:
-                let replicantController = ReplicantController(configPath: optionsDir, targetHost: targetHost, targetPort: targetPort, bindHost: bindHost, bindPort: bindPort)
+                let replicantController = ReplicantController(
+                    configPath: optionsDir,
+                    targetHost: targetHost,
+                    targetPort: targetPort,
+                    bindHost: bindHost,
+                    bindPort: bindPort)
                 
                 if serverMode
                 {
@@ -391,12 +392,35 @@ struct ShapeshifterDispatcher: ParsableCommand
                 }
                 else
                 {
-                    appLog.error("Currently only server mode is supported.")
+                    appLog.error("Currently only server mode is supported for the Replicant transport.")
+                    return
+                }
+                
+            case .shadow:
+                let shadowController = ShadowController(
+                    configPath: optionsDir,
+                    targetHost: targetHost,
+                    targetPort: targetPort,
+                    bindHost: bindHost,
+                    bindPort: bindPort)
+                
+                if serverMode
+                {
+                    try shadowController.runServer()
+                }
+                else
+                {
+                    appLog.error("Currently only server mode is supported for the Shadow transport.")
                     return
                 }
                 
             case .starbridge:
-                let starbridgeController = StarbridgeController(configPath: optionsDir, targetHost: targetHost, targetPort: targetPort, bindHost: bindHost, bindPort: bindPort)
+                let starbridgeController = StarbridgeController(
+                    configPath: optionsDir,
+                    targetHost: targetHost,
+                    targetPort: targetPort,
+                    bindHost: bindHost,
+                    bindPort: bindPort)
                 
                 if serverMode
                 {
@@ -404,7 +428,7 @@ struct ShapeshifterDispatcher: ParsableCommand
                 }
                 else
                 {
-                    appLog.error("Currently only server mode is supported.")
+                    appLog.error("Currently only server mode is supported for the Starbridge transport.")
                     return
                 }
         }

@@ -9,6 +9,8 @@ import ArgumentParser
 import Foundation
 import Logging
 
+import Dandelion
+import Gardener
 import ReplicantSwift
 import ShadowSwift
 import Starbridge
@@ -19,14 +21,15 @@ struct ShapeshifterConfig: ParsableCommand
         abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher",
         subcommands: [ShadowConfigGenerator.self,
                       StarbridgeConfigGenerator.self,
-                      ReplicantConfigGenerator.self])
+                      ReplicantConfigGenerator.self,
+                      DandelionConfigGenerator.self])
     
     struct Options: ParsableArguments
     {
-        @Option(name: .shortAndLong, help: "Specifies the <ip_address> of the Shadow server.")
+        @Option(name: .shortAndLong, help: "Specifies the <ip_address> that the server will have.")
         var host: String
         
-        @Option(name: .shortAndLong, help: "Specifies the <port> the Shadow server should listen on.")
+        @Option(name: .shortAndLong, help: "Specifies the <port> the server should listen on.")
         var port: UInt16
         
         @Option(name: .shortAndLong, help: "Specifies the directory the configs should be saved to.")
@@ -49,6 +52,7 @@ struct ShapeshifterConfig: ParsableCommand
     init() { }
 }
 
+// MARK: Shadow
 extension ShapeshifterConfig
 {
     struct ShadowConfigGenerator: ParsableCommand
@@ -100,6 +104,7 @@ extension ShapeshifterConfig
     }
 }
 
+// MARK: Starbridge
 extension ShapeshifterConfig
 {
     struct StarbridgeConfigGenerator: ParsableCommand
@@ -127,6 +132,7 @@ extension ShapeshifterConfig
     }
 }
 
+// MARK: Replicant
 extension ShapeshifterConfig
 {
     struct ReplicantConfigGenerator: ParsableCommand
@@ -154,13 +160,37 @@ extension ShapeshifterConfig
     }
 }
 
+// MARK: Dandelion
+extension ShapeshifterConfig
+{
+    struct DandelionConfigGenerator: ParsableCommand
+    {
+        static let configuration = CommandConfiguration(commandName: "dandelion", abstract: "Generate new config files for the Dandelion transport.")
+        
+        @OptionGroup() var parentOptions: Options
+        @Flag(help: "Whether or not to overwrite any existing config files and encryption keys.")
+        var overwrite = false
+        
+        func run() throws
+        {
+            print("Generating Dandelion configuration files...")
+            
+            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
+            let keychainDirectoryURL = File.homeDirectory().appendingPathComponent(".Dandelion-server")
+            let keychainLabel = "DandelionServer.KeyAgreement"
+            
+            try DandelionConfig.generateNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", keychainURL: keychainDirectoryURL, keychainLabel: keychainLabel, overwriteKey: overwrite)
+
+            print("New Dandelion config files have been saved to \(saveURL)")
+        }
+    }
+}
+
+// MARK: Errors
 public enum ConfigError: Error
 {
     case savePathIsNotDirectory(savePath: String)
-}
-
-extension ConfigError: CustomStringConvertible
-{
+    
     public var description: String
     {
         switch self
@@ -174,10 +204,7 @@ extension ConfigError: CustomStringConvertible
 public enum ShadowError: Error
 {
     case cipherModeNotSupported(cipherString: String)
-}
-
-extension ShadowError: CustomStringConvertible
-{
+    
     public var description: String
     {
         switch self

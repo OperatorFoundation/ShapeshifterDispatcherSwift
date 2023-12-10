@@ -29,12 +29,15 @@ struct ShadowController
             return
         }
         
-        print(shadowConfig.mode)
-        print(shadowConfig.serverAddress)
+        guard shadowConfig.serverIP == bindHost && shadowConfig.serverPort == bindPort else
+        {
+            
+            throw ShadowError.ConflictingTargetAddress(configHost: shadowConfig.serverIP, configPort: Int(shadowConfig.serverPort), bindHost: bindHost, bindPort: bindPort)
+        }
         
-//        let serverPersistentPrivateKey = shadowConfig.serverPrivateKey 
+        print("Starting a shadow server using cipher mode: \(shadowConfig.mode)")
         
-        guard let shadowListener = ShadowServer(host: bindHost, port: bindPort, config: shadowConfig, logger: appLog) else
+        guard let shadowListener = ShadowServer(config: shadowConfig, logger: appLog) else
         {
             appLog.error("Shapeshifter Failed to initialize a ShadowServer with the config provided.")
             return
@@ -42,8 +45,24 @@ struct ShadowController
         
         let routingController = RoutingController()
         
-        print("Listening...")
+        print("Listening at \(shadowConfig.serverIP) on port \(shadowConfig.serverPort)...")
         
         routingController.handleListener(listener: shadowListener, targetHost: targetHost, targetPort: targetPort)
+    }
+    
+    enum ShadowError: Error
+    {
+        case InvalidConfig(configPath: String)
+        case ConflictingTargetAddress(configHost: String, configPort: Int, bindHost: String, bindPort: Int)
+        
+        var description: String
+        {
+            switch self {
+                case .InvalidConfig(let configPath):
+                    return "We were unable to parse the Shadow server config at the provided path. Is this file a valid Shadow server config in JSON format?\nconfig located at \(configPath)"
+                case .ConflictingTargetAddress(let configHost, let configPort, let bindHost, let bindPort):
+                    return "The selected bind address (\(bindHost):\(bindPort)) is different from the address provided in the Shadow config file (\(configHost):\(configPort)"
+            }
+        }
     }
 }
