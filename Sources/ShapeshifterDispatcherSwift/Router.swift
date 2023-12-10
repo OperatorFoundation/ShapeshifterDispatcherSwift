@@ -11,14 +11,13 @@ import Transmission
 
 class Router
 {
-    let maxReadSize = 2048 // Could be tuned through testing in the future
+    public let maxReadSize = 2048 // Could be tuned through testing in the future
     
     let transportConnection: Transmission.Connection
     let targetConnection: Transmission.Connection
     
-    let targetToTransportQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.targetToTransportQueue")
-    let transportToTargetQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.transportToTargetQueue")
-    let cleanupQueue = DispatchQueue(label: "ShapeshifterDispatcherSwift.cleanupQueue")
+    var targetToTransportTask: Task<(), Never>? = nil
+    var transportToTargetTask: Task<(), Never>? = nil
     
     let lock = DispatchSemaphore(value: 0)
     let controller: RoutingController
@@ -33,58 +32,63 @@ class Router
         self.targetConnection = targetConnection
         
         print("ShapeshifterDispatcherSwift: Router Received a new connection")
-
-        self.targetToTransportQueue.async {
-            self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
+        
+        self.transportToTargetTask = Task
+        {
+            await self.transferTransportToTarget(transportConnection: transportConnection, targetConnection: targetConnection)
         }
         
-        self.transportToTargetQueue.async {
-            self.transferTransportToTarget(transportConnection: transportConnection, targetConnection: targetConnection)
+        self.targetToTransportTask = Task
+        {
+            await self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
         }
+
     }
     
-    func transferTargetToTransport(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection)
+    func transferTargetToTransport(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection) async
     {
         print("Target to Transport started")
         while keepGoing
         {
-            print("transferTargetToTransport: Attempting to read from the target connection...")
-            
+            print("Attempting to read from the target connection...")
             guard let dataFromTarget = targetConnection.read(maxSize: maxReadSize) else
             {
-                appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Received no data from the target on read.")
+                appLog.error("Read from the target connection returned a nil result.")
+                print("Read from the target connection returned a nil result.")
                 keepGoing = false
                 break
             }
-            
-            print("transferTargetToTransport: read \(dataFromTarget.count) bytes")
 
             guard dataFromTarget.count > 0 else
             {
-                appLog.error("ShapeshifterDispatcherSwift: transferTargetToTransport: 0 length data was read - this should not happen")
+                appLog.error("Read 0 bytes from the target connection.")
+                print("Read 0 bytes from the target connection.")
                 keepGoing = false
                 break
             }
+            print("Read \(dataFromTarget.count) bytes from the target connection.")
             
             print("transferTargetToTransport: writing to the transport connection...")
+
             guard transportConnection.write(data: dataFromTarget) else
             {
+                print("Failed to write to the transport connection.")
                 appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed.")
                 keepGoing = false
                 break
             }
             
-            print("transferTargetToTransport: wrote \(dataFromTarget.count) bytes to the transport connection.")
+            print("Wrote \(dataFromTarget.count) bytes to the transport connection.")
+            
+            await Task.yield() // Take turns
         }
         
         self.lock.signal()
-        
-        print("Target to Transport finished!")
-        
+        print("Target to Transport loop finished.")
         self.cleanup()
     }
     
-    func transferTransportToTarget(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection)
+    func transferTransportToTarget(transportConnection: Transmission.Connection, targetConnection: Transmission.Connection) async
     {
         print("Transport to Target started")
         
@@ -93,35 +97,38 @@ class Router
             print("transferTransportToTarget: Attempting to read from the client connection...")
             guard let dataFromTransport = transportConnection.read(maxSize: maxReadSize) else
             {
-                appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Received no data from the client on read.")
+                appLog.error("Read from the transport connection returned a nil result.")
+                print("Read from the target connection returned a nil result.")
                 keepGoing = false
                 break
             }
-            
-            print("transferTransportToTarget: read \(dataFromTransport.count) bytes")
             
             guard dataFromTransport.count > 0 else
             {
-                appLog.error("ShapeshifterDispatcherSwift: transferTransportToTarget: 0 length data was read - this should not happen")
+                print("Read 0 bytes from the transport connection.")
+                appLog.error("Read 0 bytes from the transport connection.")
                 keepGoing = false
                 break
             }
             
-            print("transferTransportToTarget: writing to the target connection...")
+            print("Read \(dataFromTransport.count) bytes from the transport connection.")
+            
             guard targetConnection.write(data: dataFromTransport) else
             {
-                appLog.debug("ShapeshifterDispatcherSwift: transferTransportToTarget: Unable to send target data to the target connection. The connection was likely closed.")
+                print("Failed to write to the target connection.")
+                appLog.debug("Failed to write to the target connection.")
                 keepGoing = false
-                
                 break
             }
             
-            print("transferTransportToTarget: wrote \(dataFromTransport.count) bytes to the target connection.")
+            print("Wrote \(dataFromTransport.count) bytes to the target connection.")
+            
+            await Task.yield() // Take turns
         }
         
         self.lock.signal()
         
-        print("Transport to Target finished!")
+        print("Transport to Target loop finished.")
         
         self.cleanup()
     }
@@ -129,17 +136,30 @@ class Router
     func cleanup()
     {
         // Wait for both transferTransportToTarget() and transferTargetToTransport
-        // to Signal before proceding
+        // to Signal before proceeding
         self.lock.wait()
         self.lock.wait()
         
         if !keepGoing
         {
             print("Route clean up...")
-            self.controller.remove(route: self)
-            self.targetConnection.close()
-            self.transportConnection.close()
-            print("Route clean up finished.")
+            Task
+            {
+                do
+                {
+                    try await targetConnection.close()
+                    try await transportConnection.close()
+                }
+                catch (let closeError)
+                {
+                    print("Received an error while trying to close a connection: \(closeError)")
+                }
+                
+                self.controller.remove(route: self)
+                self.targetToTransportTask?.cancel()
+                self.transportToTargetTask?.cancel()
+                print("Route clean up finished.")
+            }
         }
     }
 }
