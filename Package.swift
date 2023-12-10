@@ -9,10 +9,16 @@ let package = Package(
         .macOS(.v13)
     ],
     dependencies: [
-        .package(url: "git@github.com:apple/swift-argument-parser.git", from: "1.2.3"),
-        .package(url: "git@github.com:OperatorFoundation/ReplicantSwift.git", branch: "release"),
-        .package(url: "git@github.com:OperatorFoundation/ShadowSwift.git", branch: "release"),
-        .package(url: "git@github.com:OperatorFoundation/Starbridge.git", branch: "release")
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.3"),
+        .package(url: "https://github.com/OperatorFoundation/Chord.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/Dandelion.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/Nametag.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/ShadowSwift.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/Transmission.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionAsync.git", branch: "release")
     ],
     targets: [
         .executableTarget(
