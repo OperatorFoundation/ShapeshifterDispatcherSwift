@@ -1,42 +1,51 @@
 //
-//  RoutingController.swift
-//  ShapeshifterDispatcherSwift
+//  AsyncRoutingController.swift
+//  
 //
-//  Created by Mafalda on 3/8/22.
+//  Created by Mafalda on 12/6/23.
 //
 
 import Foundation
 
 import Chord
-import Transmission
+//import Transmission
+import TransmissionAsync
 
-class RoutingController
+class AsyncRoutingController
 {
-    var routes = [Router]()
+    var routes = [AsyncRouter]()
     
-    func handleListener(listener: Transmission.Listener, targetHost: String, targetPort: Int)
+    func handleListener(listener: AsyncListener, targetHost: String, targetPort: Int)
     {
         while true
         {
             do
             {
-                let transportConnection = try listener.accept()
-                
-                print("ShapeshifterDispatcherSwift: listener accepted a transport connection.")
-                                
-                guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
+                let transportConnection = try AsyncAwaitThrowingSynchronizer<AsyncConnection>.sync
                 {
-                    print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
-                    appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server.")
-                    listener.close()
-                    continue
+                    let connection = try await listener.accept()
+                    print("Accepted a transport connection.")
+                    return connection
                 }
                 
-                print("ShapeshifterDispatcherSwift: target connection created.")
-                
-                let route = Router(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
-                print("ShapeshifterDispatcherSwift: new route created.")
-                routes.append(route)
+                Task
+                {
+                   do
+                   {
+                       let targetConnection = try await AsyncTcpSocketConnection(targetHost, targetPort, appLog)
+                       print("A target connection was created.")
+                       let route = AsyncRouter(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
+                       print("ShapeshifterDispatcherSwift: new route created.")
+                       routes.append(route)
+                   }
+                    catch (let targetConnectionError)
+                    {
+                        print("Failed to connect to the application server. Error: \(targetConnectionError)")
+                        appLog.error("Failed to connect to the application server. Error: \(targetConnectionError)")
+                        try await listener.close()
+                        return
+                    }
+                }
             }
             catch
             {
@@ -55,7 +64,7 @@ class RoutingController
 //            {
 //                let transportConnection = try listener.accept()
 //                print("ShapeshifterDispatcherSwift: listener accepted a transport connection.")
-//                
+//
 //                guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
 //                {
 //                    print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
@@ -63,7 +72,7 @@ class RoutingController
 //                    listener.close()
 //                    continue
 //                }
-//                
+//
 //                print("ShapeshifterDispatcherSwift: target connection created.")
 //                let route = Router(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
 //                print("ShapeshifterDispatcherSwift: new route created.")
@@ -78,7 +87,7 @@ class RoutingController
 //        }
 //    }
     
-    func remove(route: Router)
+    func remove(route: AsyncRouter)
     {
         self.routes = self.routes.filter
         {
@@ -88,3 +97,4 @@ class RoutingController
         }
     }
 }
+
