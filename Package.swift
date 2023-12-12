@@ -24,13 +24,21 @@ let package = Package(
         .executableTarget(
             name: "ShapeshifterDispatcherSwift",
             dependencies: [
+                "Chord",
+                "Nametag",
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
-                .product(name: "ArgumentParser", package: "swift-argument-parser")]),
+                "Transmission",
+                "TransmissionAsync",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "DandelionServer", package: "Dandelion"),
+                .product(name: "TransmissionAsyncNametag", package: "Nametag")]),
         .executableTarget(
             name: "ShapeshifterConfigs",
             dependencies: [
+                "Dandelion",
+                "Gardener",
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
