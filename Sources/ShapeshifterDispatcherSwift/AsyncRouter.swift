@@ -53,14 +53,13 @@ class AsyncRouter
             print("Attempting to read from the target connection...")
             do
             {
-                let dataFromTarget = try await targetConnection.readMaxSize(maxReadSize)
+                let dataFromTarget = try await targetConnection.readMinMaxSize(1, maxReadSize)
 
                 guard dataFromTarget.count > 0 else
                 {
-                    appLog.error("Read 0 bytes from the target connection.")
+                    appLog.debug("AsyncRouter - Read 0 bytes from the target connection.")
                     print("Read 0 bytes from the target connection.")
-                    keepGoing = false
-                    break
+                    continue
                 }
                 print("Read \(dataFromTarget.count) bytes from the target connection.")
                 
