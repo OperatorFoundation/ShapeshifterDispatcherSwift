@@ -102,14 +102,13 @@ class AsyncRouter
             print("transferTransportToTarget: Attempting to read from the client connection...")
             do
             {
-                let dataFromTransport = try await transportConnection.readMaxSize(maxReadSize)
+                let dataFromTransport = try await transportConnection.readMinMaxSize(1, maxReadSize)
                 
                 guard dataFromTransport.count > 0 else
                 {
                     print("Read 0 bytes from the transport connection.")
                     appLog.error("Read 0 bytes from the transport connection.")
-                    keepGoing = false
-                    break
+                    continue
                 }
                 
                 print("Read \(dataFromTransport.count) bytes from the transport connection.")
