@@ -38,11 +38,10 @@ class AsyncRouter
             await self.transferTransportToTarget(transportConnection: transportConnection, targetConnection: targetConnection)
         }
 
-        // FIXME: DEBUG ONLY both loops are needed
-//        self.targetToTransportTask = Task
-//        {
-//            await self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
-//        }
+        self.targetToTransportTask = Task
+        {
+            await self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
+        }
     }
     
     func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
