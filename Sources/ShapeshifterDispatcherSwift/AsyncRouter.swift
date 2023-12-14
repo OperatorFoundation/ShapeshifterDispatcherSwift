@@ -42,7 +42,6 @@ class AsyncRouter
         {
             await self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
         }
-
     }
     
     func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
@@ -53,16 +52,15 @@ class AsyncRouter
             print("Attempting to read from the target connection...")
             do
             {
-                let dataFromTarget = try await targetConnection.readMaxSize(maxReadSize)
+                let dataFromTarget = try await targetConnection.readMinMaxSize(1, maxReadSize)
 
                 guard dataFromTarget.count > 0 else
                 {
-                    appLog.error("Read 0 bytes from the target connection.")
+                    appLog.debug("\nAsyncRouter - Read 0 bytes from the target connection.")
                     print("Read 0 bytes from the target connection.")
-                    keepGoing = false
-                    break
+                    continue
                 }
-                print("Read \(dataFromTarget.count) bytes from the target connection.")
+                print("\nAsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
                 print("transferTargetToTransport: writing to the transport connection...")
                 do
@@ -77,11 +75,11 @@ class AsyncRouter
                     break
                 }
                 
-                print("Wrote \(dataFromTarget.count) bytes to the transport connection.")
+                print("Wrote \(dataFromTarget.count) bytes to the transport connection.\n")
             }
             catch (let readError)
             {
-                appLog.debug("Failed to read from the target connection. Error: \(readError).")
+                appLog.debug("Failed to read from the target connection. Error: \(readError).\n")
                 keepGoing = false
                 break
             }
@@ -103,14 +101,13 @@ class AsyncRouter
             print("transferTransportToTarget: Attempting to read from the client connection...")
             do
             {
-                let dataFromTransport = try await transportConnection.readMaxSize(maxReadSize)
+                let dataFromTransport = try await transportConnection.readMinMaxSize(1, maxReadSize)
                 
                 guard dataFromTransport.count > 0 else
                 {
-                    print("Read 0 bytes from the transport connection.")
-                    appLog.error("Read 0 bytes from the transport connection.")
-                    keepGoing = false
-                    break
+                    print("\nRead 0 bytes from the transport connection.")
+                    appLog.error("\nRead 0 bytes from the transport connection.")
+                    continue
                 }
                 
                 print("Read \(dataFromTransport.count) bytes from the transport connection.")
@@ -127,11 +124,11 @@ class AsyncRouter
                     break
                 }
                 
-                print("Wrote \(dataFromTransport.count) bytes to the target connection.")
+                print("Wrote \(dataFromTransport.count) bytes to the target connection.\n")
             }
             catch (let readError)
             {
-                appLog.debug("Failed to read from the transport connection. Error: \(readError)")
+                print("Failed to read from the transport connection. Error: \(readError)\n")
                 keepGoing = false
                 break
             }
