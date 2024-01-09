@@ -12,6 +12,7 @@ import Logging
 import ShadowSwift
 
 let supportedPTVersion = "3.0"
+let logLevel: Logger.Level = .error
 var appLog = Logger(label: "ShapeshifterDispatcherSwift")
 
 // TODO: Refactor to use the exact arguments that dispatcher needs according to the spec
@@ -348,15 +349,8 @@ struct ShapeshifterDispatcher: ParsableCommand
     
     func run() throws
     {
-        #if canImport(WASILibc)
-        // Logger is already setup
-        #else
-        // Setup the logger
-            #if !os(macOS)
-                LoggingSystem.bootstrap(StreamLogHandler.standardError)
-                appLog.logLevel = .debug
-            #endif
-        #endif
+        LoggingSystem.bootstrap(StreamLogHandler.standardError)
+        appLog.logLevel = logLevel
                 
         switch (transport)
         {

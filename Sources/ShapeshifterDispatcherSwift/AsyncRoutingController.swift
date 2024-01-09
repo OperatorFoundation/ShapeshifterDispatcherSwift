@@ -13,6 +13,8 @@ import TransmissionAsync
 
 class AsyncRoutingController
 {
+    let verbose = false
+    
     var routes = [AsyncRouter]()
     
     func handleListener(listener: AsyncListener, targetHost: String, targetPort: Int)
@@ -32,7 +34,7 @@ class AsyncRoutingController
                 {
                    do
                    {
-                       let targetConnection = try await AsyncTcpSocketConnection(targetHost, targetPort, appLog)
+                       let targetConnection = try await AsyncTcpSocketConnection(targetHost, targetPort, appLog, verbose: verbose)
                        print("A target connection was created.")
                        let route = AsyncRouter(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
                        print("ShapeshifterDispatcherSwift: new route created.")
