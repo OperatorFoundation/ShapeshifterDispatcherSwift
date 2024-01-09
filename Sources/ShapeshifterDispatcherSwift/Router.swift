@@ -145,15 +145,8 @@ class Router
             print("Route clean up...")
             Task
             {
-                do
-                {
-                    try await targetConnection.close()
-                    try await transportConnection.close()
-                }
-                catch (let closeError)
-                {
-                    print("Received an error while trying to close a connection: \(closeError)")
-                }
+                targetConnection.close()
+                transportConnection.close()
                 
                 self.controller.remove(route: self)
                 self.targetToTransportTask?.cancel()
