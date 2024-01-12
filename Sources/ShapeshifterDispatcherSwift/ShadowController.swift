@@ -13,11 +13,11 @@ import ShadowSwift
 
 struct ShadowController
 {
-    var configPath: String
+    let verbose = true
     
+    var configPath: String
     var targetHost: String
     var targetPort: Int
-    
     var bindHost: String
     var bindPort: Int
     
@@ -38,7 +38,7 @@ struct ShadowController
         print("Starting a shadow server using cipher mode: \(shadowConfig.mode)")
         do
         {
-            let shadowListener = try AsyncDarkstarListener(config: shadowConfig, logger: appLog, verbose: true)
+            let shadowListener = try AsyncDarkstarListener(config: shadowConfig, logger: appLog, verbose: verbose)
             let routingController = AsyncRoutingController()
             
             print("Listening at \(shadowConfig.serverIP) on port \(shadowConfig.serverPort)...")

@@ -49,7 +49,7 @@ class AsyncRouter
         print("Target to Transport started")
         while keepGoing
         {
-            print("Attempting to read from the target connection...")
+            appLog.debug("Attempting to read from the target connection...")
             do
             {
                 let dataFromTarget = try await targetConnection.readMinMaxSize(1, maxReadSize)
@@ -57,25 +57,23 @@ class AsyncRouter
                 guard dataFromTarget.count > 0 else
                 {
                     appLog.debug("\nAsyncRouter - Read 0 bytes from the target connection.")
-                    print("Read 0 bytes from the target connection.")
                     continue
                 }
-                print("\nAsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
+                appLog.debug("\nAsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
-                print("transferTargetToTransport: writing to the transport connection...")
+                appLog.debug("transferTargetToTransport: writing to the transport connection...")
                 do
                 {
                     try await transportConnection.write(dataFromTarget)
                 }
                 catch (let writeError)
                 {
-                    print("Failed to write to the transport connection. Error: \(writeError)")
                     appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
                     keepGoing = false
                     break
                 }
                 
-                print("Wrote \(dataFromTarget.count) bytes to the transport connection.\n")
+                appLog.debug("Wrote \(dataFromTarget.count) bytes to the transport connection.\n")
             }
             catch (let readError)
             {
@@ -88,7 +86,7 @@ class AsyncRouter
         }
         
         self.lock.signal()
-        print("Target to Transport loop finished.")
+        appLog.debug("Target to Transport loop finished.")
         self.cleanup()
     }
     
@@ -105,7 +103,6 @@ class AsyncRouter
                 
                 guard dataFromTransport.count > 0 else
                 {
-                    print("\nRead 0 bytes from the transport connection.")
                     appLog.error("\nRead 0 bytes from the transport connection.")
                     continue
                 }
@@ -118,8 +115,7 @@ class AsyncRouter
                 }
                 catch (let writeError)
                 {
-                    print("Failed to write to the target connection. Error: \(writeError)")
-                    appLog.debug("Failed to write to the target connection. Error: \(writeError)")
+                    appLog.error("Failed to write to the target connection. Error: \(writeError)")
                     keepGoing = false
                     break
                 }
@@ -128,7 +124,7 @@ class AsyncRouter
             }
             catch (let readError)
             {
-                print("Failed to read from the transport connection. Error: \(readError)\n")
+                appLog.error("Failed to read from the transport connection. Error: \(readError)\n")
                 keepGoing = false
                 break
             }
