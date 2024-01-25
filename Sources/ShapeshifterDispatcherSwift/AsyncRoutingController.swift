@@ -53,7 +53,7 @@ class AsyncRoutingController
             {
                 print("Failed to accept a new connection: \(error).")
                 appLog.error("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: \(error)")
-                continue
+                return
             }
         }
     }
