@@ -51,7 +51,7 @@ struct ShadowController
             return
         }
         
-        
+        print("Exiting.")
     }
     
     enum ShadowError: Error
