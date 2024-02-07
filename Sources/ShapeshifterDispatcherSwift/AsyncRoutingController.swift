@@ -8,7 +8,7 @@
 import Foundation
 
 import Chord
-//import Transmission
+import ShadowSwift
 import TransmissionAsync
 
 class AsyncRoutingController
@@ -48,6 +48,12 @@ class AsyncRoutingController
                         return
                     }
                 }
+            }
+            catch AsyncDarkstarServerError.blackHoled
+            {
+                print("The connection was blackHoled.)")
+                appLog.error("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: blackHoled")
+                continue
             }
             catch
             {
