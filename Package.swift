@@ -10,7 +10,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.3"),
-        .package(url: "https://github.com/OperatorFoundation/Chord.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/Chord.git", branch: "0.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Dandelion.git", branch: "release"),
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "release"),
         .package(url: "https://github.com/OperatorFoundation/Nametag.git", branch: "release"),
