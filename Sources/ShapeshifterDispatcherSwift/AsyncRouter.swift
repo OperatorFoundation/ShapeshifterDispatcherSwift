@@ -68,6 +68,7 @@ class AsyncRouter
                 catch (let writeError)
                 {
                     appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
+                    print("💙 Target to Transport: exited because of a write failure")
                     keepGoing = false
                     break
                 }
@@ -77,6 +78,7 @@ class AsyncRouter
             catch (let readError)
             {
                 appLog.debug("Failed to read from the target connection. Error: \(readError).\n")
+                print("💙 Target to Transport: exited because of a read failure")
                 keepGoing = false
                 break
             }
@@ -115,6 +117,7 @@ class AsyncRouter
                 catch (let writeError)
                 {
                     appLog.error("Failed to write to the target connection. Error: \(writeError)")
+                    print("💜 Transport to Target: exited because of a write failure")
                     keepGoing = false
                     break
                 }
@@ -124,6 +127,7 @@ class AsyncRouter
             catch (let readError)
             {
                 appLog.error("Failed to read from the transport connection. Error: \(readError)\n")
+                print("💜 Transport to Target: exited because of a read failure")
                 keepGoing = false
                 break
             }
