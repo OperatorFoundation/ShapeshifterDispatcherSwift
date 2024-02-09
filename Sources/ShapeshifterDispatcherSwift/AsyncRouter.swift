@@ -88,7 +88,7 @@ class AsyncRouter
         
         self.lock.signal()
         print("💙 Target to Transport loop finished.")
-        self.cleanup()
+        await self.cleanup()
     }
     
     func transferTransportToTarget(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
@@ -137,35 +137,30 @@ class AsyncRouter
         
         self.lock.signal()
         print("💜 Transport to Target loop finished.")
-        self.cleanup()
+        await self.cleanup()
     }
     
-    func cleanup()
+    func cleanup() async
     {
-        // Wait for both transferTransportToTarget() and transferTargetToTransport
-        // to Signal before proceeding
-        self.lock.wait()
+        await self.transportToTargetTask?.value
         
         if !keepGoing
         {
             print("Route clean up...")
-            Task
+            do
             {
-                do
-                {
-                    try await targetConnection.close()
-                    try await transportConnection.close()
-                }
-                catch (let closeError)
-                {
-                    print("Received an error while trying to close a connection: \(closeError)")
-                }
-                
-                self.controller.remove(route: self)
-                self.targetToTransportTask?.cancel()
-                self.transportToTargetTask?.cancel()
-                print("Route clean up finished.")
+                try await targetConnection.close()
+                try await transportConnection.close()
             }
+            catch (let closeError)
+            {
+                print("Received an error while trying to close a connection: \(closeError)")
+            }
+            
+            self.controller.remove(route: self)
+            self.targetToTransportTask?.cancel()
+            self.transportToTargetTask?.cancel()
+            print("Route clean up finished.")
         }
     }
 }
