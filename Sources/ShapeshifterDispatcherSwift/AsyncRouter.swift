@@ -137,6 +137,7 @@ class AsyncRouter
         
         self.lock.signal()
         print("💜 Transport to Target loop finished.")
+        self.targetToTransportTask?.cancel()
         self.cleanup()
     }
     
