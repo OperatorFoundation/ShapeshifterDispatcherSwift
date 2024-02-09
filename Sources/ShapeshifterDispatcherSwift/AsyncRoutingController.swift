@@ -21,6 +21,11 @@ class AsyncRoutingController
     {
         while true
         {
+            if verbose
+            {
+                print("Async router listening for connections...")
+            }
+            
             do
             {
                 let transportConnection = try AsyncAwaitThrowingSynchronizer<AsyncConnection>.sync

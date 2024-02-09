@@ -84,7 +84,6 @@ class AsyncRouter
             
             await Task.yield() // Take turns
         }
-        
         self.lock.signal()
         appLog.debug("Target to Transport loop finished.")
         self.cleanup()
