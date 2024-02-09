@@ -137,7 +137,17 @@ class AsyncRouter
         
         self.lock.signal()
         print("💜 Transport to Target loop finished.")
-        self.targetToTransportTask?.cancel()
+        
+        if let targetToTransportTask = self.targetToTransportTask
+        {
+            targetToTransportTask.cancel()
+            print("Canceled 💙 Target to Transport because the task is nil")
+        }
+        else
+        {
+            print("Failed to cancel 💙 Target to Transport because the task is nil")
+        }
+        
         self.cleanup()
     }
     
