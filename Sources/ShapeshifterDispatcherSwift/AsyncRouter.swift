@@ -53,10 +53,10 @@ class AsyncRouter
     
     func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
     {
-        print("💙 Target to Transport started")
+        appLog.debug("💙 Target to Transport started")
         while keepGoing
         {
-            print("💙 Target to Transport: Attempting to read from the target connection...")
+            appLog.debug("💙 Target to Transport: Attempting to read from the target connection...")
             do
             {
                 let dataFromTarget = try await targetConnection.readMinMaxSize(1, maxReadSize)
@@ -66,7 +66,7 @@ class AsyncRouter
                     appLog.debug("\nAsyncRouter - Read 0 bytes from the target connection.")
                     continue
                 }
-                print("💙 Target to Transport: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
+                appLog.debug("💙 Target to Transport: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
                 do
                 {
@@ -75,17 +75,15 @@ class AsyncRouter
                 catch (let writeError)
                 {
                     appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
-                    print("💙 Target to Transport: exited because of a write failure")
                     keepGoing = false
                     break
                 }
                 
-                print("💙 Target to Transport: Wrote \(dataFromTarget.count) bytes to the transport connection.\n")
+                appLog.debug("💙 Target to Transport: Wrote \(dataFromTarget.count) bytes to the transport connection.\n")
             }
             catch (let readError)
             {
                 appLog.debug("Failed to read from the target connection. Error: \(readError).\n")
-                print("💙 Target to Transport: exited because of a read failure")
                 keepGoing = false
                 break
             }
@@ -94,16 +92,15 @@ class AsyncRouter
         }
         
         self.lock.signal()
-        print("💙 Target to Transport loop finished.")
     }
     
     func transferTransportToTarget(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
     {
-        print("💜 Transport to Target started")
+        appLog.debug("💜 Transport to Target started")
         
         while keepGoing
         {
-            print("💜 Transport to Target: Attempting to read from the client connection...")
+            appLog.debug("💜 Transport to Target: Attempting to read from the client connection...")
             do
             {
                 let dataFromTransport = try await transportConnection.readMinMaxSize(1, maxReadSize)
@@ -114,7 +111,7 @@ class AsyncRouter
                     continue
                 }
                 
-                print("💜 Transport to Target: Read \(dataFromTransport.count) bytes from the transport connection.")
+                appLog.debug("💜 Transport to Target: Read \(dataFromTransport.count) bytes from the transport connection.")
                 
                 do
                 {
@@ -123,17 +120,15 @@ class AsyncRouter
                 catch (let writeError)
                 {
                     appLog.error("Failed to write to the target connection. Error: \(writeError)")
-                    print("💜 Transport to Target: exited because of a write failure")
                     keepGoing = false
                     break
                 }
                 
-                print("💜 Transport to Target: Wrote \(dataFromTransport.count) bytes to the target connection.\n")
+                appLog.debug("💜 Transport to Target: Wrote \(dataFromTransport.count) bytes to the target connection.\n")
             }
             catch (let readError)
             {
                 appLog.error("Failed to read from the transport connection. Error: \(readError)\n")
-                print("💜 Transport to Target: exited because of a read failure")
                 keepGoing = false
                 break
             }
@@ -142,7 +137,6 @@ class AsyncRouter
         }
         
         self.lock.signal()
-        print("💜 Transport to Target loop finished.")
     }
     
     func cleanup() async
