@@ -37,11 +37,18 @@ class AsyncRouter
         {
             await self.transferTransportToTarget(transportConnection: transportConnection, targetConnection: targetConnection)
         }
+        
 
         self.targetToTransportTask = Task
         {
             await self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
         }
+        
+        Task
+        {
+            await self.cleanup()
+        }
+
     }
     
     func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
@@ -88,7 +95,6 @@ class AsyncRouter
         
         self.lock.signal()
         print("💙 Target to Transport loop finished.")
-        await self.cleanup()
     }
     
     func transferTransportToTarget(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
@@ -137,7 +143,6 @@ class AsyncRouter
         
         self.lock.signal()
         print("💜 Transport to Target loop finished.")
-        await self.cleanup()
     }
     
     func cleanup() async
