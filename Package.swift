@@ -18,7 +18,8 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift.git", branch: "release"),
         .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "release"),
         .package(url: "https://github.com/OperatorFoundation/Transmission.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionAsync.git", branch: "release")
+        .package(url: "https://github.com/OperatorFoundation/TransmissionAsync.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionAsyncNametag.git", branch: "release")
     ],
     targets: [
         .executableTarget(
@@ -33,7 +34,7 @@ let package = Package(
                 "TransmissionAsync",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "DandelionServer", package: "Dandelion"),
-                .product(name: "TransmissionAsyncNametag", package: "Nametag")]),
+                .product(name: "TransmissionAsyncNametag", package: "TransmissionAsyncNametag")]),
         .executableTarget(
             name: "ShapeshifterConfigs",
             dependencies: [
