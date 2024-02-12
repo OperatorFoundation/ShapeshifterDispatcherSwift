@@ -13,7 +13,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Chord.git", branch: "0.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Dandelion.git", branch: "release"),
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/Nametag.git", branch: "release"),
+        .package(url: "https://github.com/OperatorFoundation/Nametag.git", branch: "0.1.1"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "release"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift.git", branch: "release"),
         .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "release"),
