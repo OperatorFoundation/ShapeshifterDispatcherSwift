@@ -38,7 +38,7 @@ struct ShadowController
         appLog.debug("Starting a shadow server using cipher mode: \(shadowConfig.mode)")
         do
         {
-            let shadowListener = try AsyncDarkstarListener(config: shadowConfig, logger: appLog, verbose: verbose)
+            let shadowListener = try AsyncDarkstarListener(config: shadowConfig, logger: appLog)
             let routingController = AsyncRoutingController()
             
             print("Shadow server now listening at \(shadowConfig.serverIP) on port \(shadowConfig.serverPort)...")

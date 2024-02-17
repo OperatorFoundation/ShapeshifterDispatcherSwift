@@ -17,6 +17,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Starbridge", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Straw.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Transmission", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionAsync", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionAsyncNametag", branch: "main")
@@ -30,6 +31,7 @@ let package = Package(
                 "Nametag",
                 "ShadowSwift",
                 "Starbridge",
+                "Straw",
                 "Transmission",
                 "TransmissionAsync",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),

@@ -7,6 +7,7 @@
 
 import Foundation
 
+import Straw
 import TransmissionAsync
 
 class AsyncRouter
@@ -54,6 +55,13 @@ class AsyncRouter
     func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
     {
         appLog.debug("💙 Target to Transport started")
+        let maxBatchSize =  250 // bytes
+        let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
+        var lastPacketSentTime = Date() // now
+        
+        var batchBuffer = UnsafeStraw()
+        
+        
         while keepGoing
         {
             appLog.debug("💙 Target to Transport: Attempting to read from the target connection...")
@@ -68,9 +76,30 @@ class AsyncRouter
                 }
                 appLog.debug("💙 Target to Transport: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
+                batchBuffer.write(dataFromTarget)
+                
+                let dataToSend: Data
+                
+                if batchBuffer.count >= maxBatchSize
+                {
+                    // If we have enough data, send it
+                    dataToSend = try batchBuffer.read()
+                }
+                else if lastPacketSentTime.timeIntervalSinceNow >= timeoutDuration
+                {
+                    // If we spent enough time waiting send what we have
+                    dataToSend = try batchBuffer.read()
+                }
+                else
+                {
+                    // Otherwise keep reading
+                    continue
+                }
+                
                 do
                 {
-                    try await transportConnection.write(dataFromTarget)
+                    try await transportConnection.write(dataToSend)
+                    lastPacketSentTime = Date()
                 }
                 catch (let writeError)
                 {
