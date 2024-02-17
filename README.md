@@ -9,23 +9,23 @@ Currently this implementation only supports running **Shadow** and **Starbridge*
 #### Running a Starbridge Server
 
 ```
-ShapeshifterDispatcherSwift -ptversion 3.0 -transport starbridge -server -bindhost <serverIP> -bindport <serverPort> -optionsFile <pathToTransportConfigJSON>
+ShapeshifterDispatcherSwift -ptversion 3.0 -transport starbridge -bindhost <server IP> -bindport <server port> -optionsfile <pathToTransportConfig> -server
 ```
 
 #### Running a Starbridge Server With a Target Host
 
 ```
-ShapeshifterDispatcherSwift -ptversion 3.0 -transport starbridge -server -bindhost <serverIP> -bindport <serverPort> -targethost <targetIP> -targetport <targetPort> -optionsFile <pathToTransportConfigJSON>
+ShapeshifterDispatcherSwift -ptversion 3.0 -transport starbridge -bindhost <server IP> -bindport <server port> -optionsfile <pathToTransportConfig> -server -targethost <target IP> -targetport <target port>
 ```
 
 #### Running a Shadow Server
 ```
-ShapeshifterDispatcherSwift -ptversion 3.0 -transport shadow -server -bindhost <serverIP>  -bindport <serverPort> -optionsFile <pathToTransportConfigJSON>
+ShapeshifterDispatcherSwift -ptversion 3.0 -transport shadow -bindhost <server IP> -bindport <server port> -optionsfile <pathToTransportConfig> -server
 ```
 
 #### Running a Shadow Server With a Target Host
 ```
-ShapeshifterDispatcherSwift -ptversion 3.0 -transport shadow -server -bindhost <serverIP>  -bindport <serverPort> -targethost <targetIP> -targetport <targetPort> -optionsFile <pathToTransportConfigJSON>
+ShapeshifterDispatcherSwift -ptversion 3.0 -transport shadow -bindhost <server IP> -bindport <server port> -optionsfile <pathToTransportConfig> -server -targethost <target IP> -targetport <target port>
 ```
 
 
