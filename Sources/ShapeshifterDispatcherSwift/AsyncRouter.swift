@@ -57,11 +57,9 @@ class AsyncRouter
         appLog.debug("💙 Target to Transport started")
         let maxBatchSize =  250 // bytes
         let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
+        let batchBuffer = UnsafeStraw()
         var lastPacketSentTime = Date() // now
-        
-        var batchBuffer = UnsafeStraw()
-        
-        
+
         while keepGoing
         {
             appLog.debug("💙 Target to Transport: Attempting to read from the target connection...")
