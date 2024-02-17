@@ -22,61 +22,28 @@ class RoutingController
             {
                 let transportConnection = try listener.accept()
                 
-                print("ShapeshifterDispatcherSwift: listener accepted a transport connection.")
+                appLog.debug("ShapeshifterDispatcherSwift: listener accepted a transport connection.")
                                 
                 guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
                 {
-                    print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
                     appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server.")
                     listener.close()
                     continue
                 }
                 
-                print("ShapeshifterDispatcherSwift: target connection created.")
+                appLog.debug("ShapeshifterDispatcherSwift: target connection created.")
                 
                 let route = Router(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
-                print("ShapeshifterDispatcherSwift: new route created.")
+                appLog.debug("ShapeshifterDispatcherSwift: new route created.")
                 routes.append(route)
             }
             catch
             {
-                print("Failed to accept a new connection: \(error).")
                 appLog.error("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: \(error)")
                 continue
             }
         }
     }
-    
-//    func handleListener(listener: Transmission.Listener, targetHost: String, targetPort: Int)
-//    {
-//        while true
-//        {
-//            do
-//            {
-//                let transportConnection = try listener.accept()
-//                print("ShapeshifterDispatcherSwift: listener accepted a transport connection.")
-//                
-//                guard let targetConnection = TransmissionConnection(host: targetHost, port: targetPort) else
-//                {
-//                    print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to connect to the target server.")
-//                    appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server.")
-//                    listener.close()
-//                    continue
-//                }
-//                
-//                print("ShapeshifterDispatcherSwift: target connection created.")
-//                let route = Router(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
-//                print("ShapeshifterDispatcherSwift: new route created.")
-//                routes.append(route)
-//            }
-//            catch
-//            {
-//                print("ShapeshifterDispatcherSwift: RoutingController.handleListener: Failed to accept a new connection: \(error).")
-//                appLog.error("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: \(error)")
-//                continue
-//            }
-//        }
-//    }
     
     func remove(route: Router)
     {

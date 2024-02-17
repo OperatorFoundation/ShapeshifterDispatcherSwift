@@ -29,9 +29,7 @@ struct StarbridgeController
             appLog.error("Failed to launch a Starbridge Server, we were unable to parse the config at the provided path.")
             return
         }
-        
-        print(starbridgeConfig.serverAddress)
-                
+                        
         let starbridge = Starbridge(logger: appLog)
         
         guard let starbridgeListener = try? starbridge.listen(config: starbridgeConfig) else
@@ -40,7 +38,7 @@ struct StarbridgeController
             return
         }
                
-        print("Listening...")
+        print("Starbridge server is now listening at \(starbridgeConfig.serverIP) on port \(starbridgeConfig.serverPort)...")
         
         let routingController = RoutingController()
         routingController.handleListener(listener: starbridgeListener, targetHost: targetHost, targetPort: targetPort)

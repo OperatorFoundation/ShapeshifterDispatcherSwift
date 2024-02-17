@@ -31,7 +31,7 @@ class AsyncRouter
         self.transportConnection = transportConnection
         self.targetConnection = targetConnection
         
-        print("ShapeshifterDispatcherSwift: Router Received a new connection")
+        appLog.debug("ShapeshifterDispatcherSwift: Router Received a new connection")
         
         self.transportToTargetTask = Task
         {
@@ -107,7 +107,7 @@ class AsyncRouter
                 
                 guard dataFromTransport.count > 0 else
                 {
-                    appLog.error("\nRead 0 bytes from the transport connection.")
+                    appLog.warning("\nRead 0 bytes from the transport connection.")
                     continue
                 }
                 
@@ -119,7 +119,7 @@ class AsyncRouter
                 }
                 catch (let writeError)
                 {
-                    appLog.error("Failed to write to the target connection. Error: \(writeError)")
+                    appLog.error("💔 Failed to write to the target connection. Error: \(writeError)")
                     keepGoing = false
                     break
                 }
@@ -128,7 +128,7 @@ class AsyncRouter
             }
             catch (let readError)
             {
-                appLog.error("Failed to read from the transport connection. Error: \(readError)\n")
+                appLog.error("💔 Failed to read from the transport connection. Error: \(readError)\n")
                 keepGoing = false
                 break
             }
@@ -145,7 +145,7 @@ class AsyncRouter
         
         if !keepGoing
         {
-            print("Route clean up...")
+            appLog.debug("Route clean up...")
             do
             {
                 try await targetConnection.close()
@@ -153,13 +153,13 @@ class AsyncRouter
             }
             catch (let closeError)
             {
-                print("Received an error while trying to close a connection: \(closeError)")
+                appLog.warning("Received an error while trying to close a connection: \(closeError)")
             }
             
             self.controller.remove(route: self)
             self.targetToTransportTask?.cancel()
             self.transportToTargetTask?.cancel()
-            print("Route clean up finished.")
+            appLog.debug("Route clean up finished.")
         }
     }
 }

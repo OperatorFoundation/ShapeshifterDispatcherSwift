@@ -35,13 +35,13 @@ struct ShadowController
             throw ShadowError.ConflictingTargetAddress(configHost: shadowConfig.serverIP, configPort: Int(shadowConfig.serverPort), bindHost: bindHost, bindPort: bindPort)
         }
         
-        print("Starting a shadow server using cipher mode: \(shadowConfig.mode)")
+        appLog.debug("Starting a shadow server using cipher mode: \(shadowConfig.mode)")
         do
         {
             let shadowListener = try AsyncDarkstarListener(config: shadowConfig, logger: appLog, verbose: verbose)
             let routingController = AsyncRoutingController()
             
-            print("Listening at \(shadowConfig.serverIP) on port \(shadowConfig.serverPort)...")
+            print("Shadow server now listening at \(shadowConfig.serverIP) on port \(shadowConfig.serverPort)...")
             
             routingController.handleListener(listener: shadowListener, targetHost: targetHost, targetPort: targetPort)
         }
