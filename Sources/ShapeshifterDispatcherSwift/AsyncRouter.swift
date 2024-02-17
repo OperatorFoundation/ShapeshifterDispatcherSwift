@@ -37,19 +37,26 @@ class AsyncRouter
         {
             await self.transferTransportToTarget(transportConnection: transportConnection, targetConnection: targetConnection)
         }
+        
 
         self.targetToTransportTask = Task
         {
             await self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
         }
+        
+        Task
+        {
+            await self.cleanup()
+        }
+
     }
     
     func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
     {
-        print("Target to Transport started")
+        appLog.debug("💙 Target to Transport started")
         while keepGoing
         {
-            appLog.debug("Attempting to read from the target connection...")
+            appLog.debug("💙 Target to Transport: Attempting to read from the target connection...")
             do
             {
                 let dataFromTarget = try await targetConnection.readMinMaxSize(1, maxReadSize)
@@ -59,9 +66,8 @@ class AsyncRouter
                     appLog.debug("\nAsyncRouter - Read 0 bytes from the target connection.")
                     continue
                 }
-                appLog.debug("\nAsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
+                appLog.debug("💙 Target to Transport: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
-                appLog.debug("transferTargetToTransport: writing to the transport connection...")
                 do
                 {
                     try await transportConnection.write(dataFromTarget)
@@ -73,7 +79,7 @@ class AsyncRouter
                     break
                 }
                 
-                appLog.debug("Wrote \(dataFromTarget.count) bytes to the transport connection.\n")
+                appLog.debug("💙 Target to Transport: Wrote \(dataFromTarget.count) bytes to the transport connection.\n")
             }
             catch (let readError)
             {
@@ -86,17 +92,15 @@ class AsyncRouter
         }
         
         self.lock.signal()
-        appLog.debug("Target to Transport loop finished.")
-        self.cleanup()
     }
     
     func transferTransportToTarget(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
     {
-        print("Transport to Target started")
+        appLog.debug("💜 Transport to Target started")
         
         while keepGoing
         {
-            print("transferTransportToTarget: Attempting to read from the client connection...")
+            appLog.debug("💜 Transport to Target: Attempting to read from the client connection...")
             do
             {
                 let dataFromTransport = try await transportConnection.readMinMaxSize(1, maxReadSize)
@@ -107,7 +111,7 @@ class AsyncRouter
                     continue
                 }
                 
-                print("Read \(dataFromTransport.count) bytes from the transport connection.")
+                appLog.debug("💜 Transport to Target: Read \(dataFromTransport.count) bytes from the transport connection.")
                 
                 do
                 {
@@ -120,7 +124,7 @@ class AsyncRouter
                     break
                 }
                 
-                print("Wrote \(dataFromTransport.count) bytes to the target connection.\n")
+                appLog.debug("💜 Transport to Target: Wrote \(dataFromTransport.count) bytes to the target connection.\n")
             }
             catch (let readError)
             {
@@ -133,39 +137,29 @@ class AsyncRouter
         }
         
         self.lock.signal()
-        
-        print("Transport to Target loop finished.")
-        
-        self.cleanup()
     }
     
-    func cleanup()
+    func cleanup() async
     {
-        // Wait for both transferTransportToTarget() and transferTargetToTransport
-        // to Signal before proceeding
-        self.lock.wait()
-        self.lock.wait()
+        await self.transportToTargetTask?.value
         
         if !keepGoing
         {
             print("Route clean up...")
-            Task
+            do
             {
-                do
-                {
-                    try await targetConnection.close()
-                    try await transportConnection.close()
-                }
-                catch (let closeError)
-                {
-                    print("Received an error while trying to close a connection: \(closeError)")
-                }
-                
-                self.controller.remove(route: self)
-                self.targetToTransportTask?.cancel()
-                self.transportToTargetTask?.cancel()
-                print("Route clean up finished.")
+                try await targetConnection.close()
+                try await transportConnection.close()
             }
+            catch (let closeError)
+            {
+                print("Received an error while trying to close a connection: \(closeError)")
+            }
+            
+            self.controller.remove(route: self)
+            self.targetToTransportTask?.cancel()
+            self.transportToTargetTask?.cancel()
+            print("Route clean up finished.")
         }
     }
 }
