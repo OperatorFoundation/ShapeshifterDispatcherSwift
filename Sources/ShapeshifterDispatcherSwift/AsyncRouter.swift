@@ -155,7 +155,7 @@ class AsyncRouter
             }
             catch (let readError)
             {
-                appLog.error("💔 Failed to read from the transport connection. Error: \(readError)\n")
+                appLog.info("💔 Failed to read from the transport connection. Error: \(readError)\n")
                 keepGoing = false
                 break
             }
