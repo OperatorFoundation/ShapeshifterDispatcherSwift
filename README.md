@@ -14,6 +14,7 @@ A Swift implementation of Shapeshifter Dispatcher designed to run on Linux machi
 Currently this implementation only supports running **Shadow** and **Starbridge** transports in *server* mode.
 
 ## Running a Shadow Server
+
 ```
 ShapeshifterDispatcherSwift -ptversion 3.0 -transport shadow -bindhost <server IP> -bindport <server port> -optionsfile <pathToTransportConfig> -server -targethost <target IP> -targetport <target port>
 ```
@@ -26,7 +27,7 @@ ShapeshifterDispatcherSwift -ptversion 3.0 -transport starbridge -bindhost <serv
 
 # Shapeshifter Configs
 
-Running the dispatcher requires an options files containing the configuration information for the chosen Pluggable Transport.
+Running the dispatcher requires an options file containing the configuration information for the chosen Pluggable Transport.
 
 The ShapeshifterConfigs tool generates new config files for the transports supported by Shapeshifter Dispatcher for Swift.
 
