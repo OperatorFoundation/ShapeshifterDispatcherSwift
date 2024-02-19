@@ -83,23 +83,8 @@ extension ShapeshifterConfig
                 throw ShadowError.cipherModeNotSupported(cipherString: cipher)
             }
             
-            let result = ShadowConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", cipher: cipherMode)
-            
-            if result.saved
-            {
-                print("New Shadow config files have been saved to \(saveURL)")
-            }
-            else
-            {
-                if let saveError = result.error
-                {
-                    print("Error generating new Shadow config files: \(saveError)")
-                }
-                else
-                {
-                    print("Failed to generate the requested Shadow config files.")
-                }
-            }
+            try ShadowConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", cipher: cipherMode)
+            print("New Shadow config files have been saved to \(saveURL)")
         }
     }
 }

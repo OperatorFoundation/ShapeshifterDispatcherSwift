@@ -35,7 +35,7 @@ struct DandelionController
             throw DandelionError.ConflictingTargetAddress(configHost: serverConfig.serverIP, configPort: Int(serverConfig.serverPort), bindHost: bindHost, bindPort: bindPort)
         }
         
-        print("Starting a Dandelion server.")
+        appLog.debug("Starting a Dandelion server.")
         
         guard let dandelionServer = DandelionServer(config: serverConfig, logger: dandelionLog) else
         {

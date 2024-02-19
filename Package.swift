@@ -9,17 +9,18 @@ let package = Package(
         .macOS(.v14)
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.3"),
-        .package(url: "https://github.com/OperatorFoundation/Chord.git", branch: "0.1.1"),
-        .package(url: "https://github.com/OperatorFoundation/Dandelion.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/Nametag.git", branch: "0.1.1"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/ShadowSwift.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/Starbridge.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/Transmission.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionAsync.git", branch: "release"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionAsyncNametag.git", branch: "release")
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.3"),
+        .package(url: "https://github.com/OperatorFoundation/Chord", from: "0.1.4"),
+        .package(url: "https://github.com/OperatorFoundation/Dandelion", from: "0.1.0"),
+        .package(url: "https://github.com/OperatorFoundation/Gardener", from: "0.1.1"),
+        .package(url: "https://github.com/OperatorFoundation/Nametag", from: "0.1.2"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift", from: "2.0.1"),
+        .package(url: "https://github.com/OperatorFoundation/ShadowSwift", from: "5.0.2"),
+        .package(url: "https://github.com/OperatorFoundation/Starbridge", from: "1.2.0"),
+        .package(url: "https://github.com/OperatorFoundation/Straw", from: "1.0.1"),
+        .package(url: "https://github.com/OperatorFoundation/Transmission", from: "1.2.11"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionAsync", from: "0.1.4"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionAsyncNametag", from: "1.0.0")
     ],
     targets: [
         .executableTarget(
@@ -30,6 +31,7 @@ let package = Package(
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
+                "Straw",
                 "Transmission",
                 "TransmissionAsync",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),

@@ -7,6 +7,7 @@
 
 import Foundation
 
+import Straw
 import TransmissionAsync
 
 class AsyncRouter
@@ -31,7 +32,7 @@ class AsyncRouter
         self.transportConnection = transportConnection
         self.targetConnection = targetConnection
         
-        print("ShapeshifterDispatcherSwift: Router Received a new connection")
+        appLog.debug("ShapeshifterDispatcherSwift: Router Received a new connection")
         
         self.transportToTargetTask = Task
         {
@@ -54,6 +55,11 @@ class AsyncRouter
     func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
     {
         appLog.debug("💙 Target to Transport started")
+        let maxBatchSize =  250 // bytes
+        let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
+        let batchBuffer = UnsafeStraw()
+        var lastPacketSentTime = Date() // now
+
         while keepGoing
         {
             appLog.debug("💙 Target to Transport: Attempting to read from the target connection...")
@@ -68,9 +74,30 @@ class AsyncRouter
                 }
                 appLog.debug("💙 Target to Transport: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
+                batchBuffer.write(dataFromTarget)
+                
+                let dataToSend: Data
+                
+                if batchBuffer.count >= maxBatchSize
+                {
+                    // If we have enough data, send it
+                    dataToSend = try batchBuffer.read()
+                }
+                else if lastPacketSentTime.timeIntervalSinceNow >= timeoutDuration
+                {
+                    // If we spent enough time waiting send what we have
+                    dataToSend = try batchBuffer.read()
+                }
+                else
+                {
+                    // Otherwise keep reading
+                    continue
+                }
+                
                 do
                 {
-                    try await transportConnection.write(dataFromTarget)
+                    try await transportConnection.write(dataToSend)
+                    lastPacketSentTime = Date()
                 }
                 catch (let writeError)
                 {
@@ -107,7 +134,7 @@ class AsyncRouter
                 
                 guard dataFromTransport.count > 0 else
                 {
-                    appLog.error("\nRead 0 bytes from the transport connection.")
+                    appLog.warning("\nRead 0 bytes from the transport connection.")
                     continue
                 }
                 
@@ -119,7 +146,7 @@ class AsyncRouter
                 }
                 catch (let writeError)
                 {
-                    appLog.error("Failed to write to the target connection. Error: \(writeError)")
+                    appLog.error("💔 Failed to write to the target connection. Error: \(writeError)")
                     keepGoing = false
                     break
                 }
@@ -128,7 +155,7 @@ class AsyncRouter
             }
             catch (let readError)
             {
-                appLog.error("Failed to read from the transport connection. Error: \(readError)\n")
+                appLog.info("💔 Failed to read from the transport connection. Error: \(readError)\n")
                 keepGoing = false
                 break
             }
@@ -145,7 +172,7 @@ class AsyncRouter
         
         if !keepGoing
         {
-            print("Route clean up...")
+            appLog.debug("Route clean up...")
             do
             {
                 try await targetConnection.close()
@@ -153,13 +180,13 @@ class AsyncRouter
             }
             catch (let closeError)
             {
-                print("Received an error while trying to close a connection: \(closeError)")
+                appLog.warning("Received an error while trying to close a connection: \(closeError)")
             }
             
             self.controller.remove(route: self)
             self.targetToTransportTask?.cancel()
             self.transportToTargetTask?.cancel()
-            print("Route clean up finished.")
+            appLog.debug("Route clean up finished.")
         }
     }
 }
