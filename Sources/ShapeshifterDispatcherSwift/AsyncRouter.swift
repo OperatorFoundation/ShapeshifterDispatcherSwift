@@ -111,17 +111,22 @@ class AsyncRouter
                 if await batchBuffer.count >= maxBatchSize
                 {
                     // If we have enough data, send it
+                    appLog.debug("💙 Buffer to Transport: read() called.\n")
                     dataToSend = try await batchBuffer.read()
+                    appLog.debug("💙 Buffer to Transport: read \(dataToSend.count) bytes.\n")
                 }
                 else if lastPacketSentTime.timeIntervalSinceNow >= timeoutDuration
                 {
+                    appLog.debug("💙 Buffer to Transport: Timeout!! read() called.\n")
                     // If we spent enough time waiting send what we have
                     guard await batchBuffer.count > 0 else
                     {
                         continue
                     }
                     
+                    appLog.debug("💙 Buffer to Transport: Timeout!! read() called.\n")
                     dataToSend = try await batchBuffer.read()
+                    appLog.debug("💙 Buffer to Transport: Timeout!! read \(dataToSend.count) bytes.\n")
                 }
                 else
                 {
@@ -133,6 +138,7 @@ class AsyncRouter
                 do
                 {
                     try await transportConnection.write(dataToSend)
+                    appLog.debug("💙 Buffer to Transport: Wrote \(dataToSend.count) bytes to the transport connection.\n")
                     lastPacketSentTime = Date()
                 }
                 catch (let writeError)
@@ -142,7 +148,7 @@ class AsyncRouter
                     break
                 }
                 
-                appLog.debug("💙 Buffer to Transport: Wrote \(dataToSend.count) bytes to the transport connection.\n")
+                appLog.debug("💙 Buffer to Transport done.\n")
             }
             catch (let readError)
             {
