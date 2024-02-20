@@ -45,10 +45,10 @@ class AsyncRouter
             await self.transferTargetToBatchBuffer()
         }
         
-        self.batchBufferToTransportTask = Task
-        {
-            await self.transferBatchBufferToTransport()
-        }
+//        self.batchBufferToTransportTask = Task
+//        {
+//            await self.transferBatchBufferToTransport()
+//        }
         
         Task
         {
@@ -96,7 +96,7 @@ class AsyncRouter
     
     func transferBatchBufferToTransport() async
     {
-        appLog.debug("💙 Buffer to Target started")
+        appLog.debug("💙 Buffer to Transport started")
         let maxBatchSize =  250 // bytes
         let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
         
@@ -104,7 +104,7 @@ class AsyncRouter
 
         while keepGoing
         {
-            appLog.debug("💙 Buffer to Target: Attempting to read from the target connection...")
+            appLog.debug("💙 Buffer to Transport: Attempting to read from the target connection...")
             do
             {
                 let dataToSend: Data
@@ -138,16 +138,16 @@ class AsyncRouter
                 }
                 catch (let writeError)
                 {
-                    appLog.debug("💙‼️ Buffer to Target: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
+                    appLog.debug("💙‼️ Buffer to Transport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
                     keepGoing = false
                     break
                 }
                 
-                appLog.debug("💙 Buffer to Target: Wrote \(dataToSend.count) bytes to the transport connection.\n")
+                appLog.debug("💙 Buffer to Transport: Wrote \(dataToSend.count) bytes to the transport connection.\n")
             }
             catch (let readError)
             {
-                appLog.debug("💙‼️ Buffer to Target. Error reading from the batch buffer: \(readError).\n")
+                appLog.debug("💙‼️ Buffer to Transport. Error reading from the batch buffer: \(readError).\n")
                 keepGoing = false
                 break
             }
