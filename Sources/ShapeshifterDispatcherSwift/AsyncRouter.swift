@@ -17,7 +17,7 @@ class AsyncRouter
     
     let transportConnection: AsyncConnection
     let targetConnection: AsyncConnection
-    let batchBuffer = Straw()
+    let batchBuffer = StrawActor()
     let lock = DispatchSemaphore(value: 0)
     let controller: AsyncRoutingController
     let uuid = UUID()
@@ -45,10 +45,10 @@ class AsyncRouter
             await self.transferTargetToBatchBuffer()
         }
         
-//        self.batchBufferToTransportTask = Task
-//        {
-//            await self.transferBatchBufferToTransport()
-//        }
+        self.batchBufferToTransportTask = Task
+        {
+            await self.transferBatchBufferToTransport()
+        }
         
         Task
         {
@@ -79,7 +79,7 @@ class AsyncRouter
                 }
                 appLog.debug("💙 Target to Buffer: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
-                batchBuffer.write(dataFromTarget)
+                await batchBuffer.write(dataFromTarget)
             }
             catch (let readError)
             {
@@ -109,20 +109,20 @@ class AsyncRouter
             {
                 let dataToSend: Data
                 
-                if batchBuffer.count >= maxBatchSize
+                if await batchBuffer.count >= maxBatchSize
                 {
                     // If we have enough data, send it
-                    dataToSend = try batchBuffer.read()
+                    dataToSend = try await batchBuffer.read()
                 }
                 else if lastPacketSentTime.timeIntervalSinceNow >= timeoutDuration
                 {
                     // If we spent enough time waiting send what we have
-                    guard batchBuffer.count > 0 else
+                    guard await batchBuffer.count > 0 else
                     {
                         continue
                     }
                     
-                    dataToSend = try batchBuffer.read()
+                    dataToSend = try await batchBuffer.read()
                 }
                 else
                 {
