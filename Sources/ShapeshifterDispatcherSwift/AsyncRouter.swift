@@ -104,7 +104,6 @@ class AsyncRouter
 
         while keepGoing
         {
-            appLog.debug("💙 Buffer to Transport: Attempting to read from the target connection...")
             do
             {
                 let dataToSend: Data
