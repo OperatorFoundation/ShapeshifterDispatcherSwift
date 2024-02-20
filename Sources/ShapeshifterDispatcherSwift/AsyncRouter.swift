@@ -108,7 +108,7 @@ class AsyncRouter
             {
                 let dataToSend: Data
                 
-                if await batchBuffer.count >= maxBatchSize
+                if await batchBuffer.count() >= maxBatchSize
                 {
                     // If we have enough data, send it
                     appLog.debug("💙 Buffer to Transport: read() called.\n")
@@ -119,7 +119,7 @@ class AsyncRouter
                 {
                     appLog.debug("💙 Buffer to Transport: Timeout!! read() called.\n")
                     // If we spent enough time waiting send what we have
-                    guard await batchBuffer.count > 0 else
+                    guard await batchBuffer.count() > 0 else
                     {
                         continue
                     }
