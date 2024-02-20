@@ -7,6 +7,7 @@
 
 import Foundation
 
+import Chord
 import Straw
 import TransmissionAsync
 
@@ -16,14 +17,14 @@ class AsyncRouter
     
     let transportConnection: AsyncConnection
     let targetConnection: AsyncConnection
-    
-    var targetToTransportTask: Task<(), Never>? = nil
-    var transportToTargetTask: Task<(), Never>? = nil
-    
+    let batchBuffer = Straw()
     let lock = DispatchSemaphore(value: 0)
     let controller: AsyncRoutingController
     let uuid = UUID()
     
+    var targetToBatchBuffer: Task<(), Never>? = nil
+    var batchBufferToTransportTask: Task<(), Never>? = nil
+    var transportToTargetTask: Task<(), Never>? = nil
     var keepGoing = true
     
     init(controller: AsyncRoutingController, transportConnection: AsyncConnection, targetConnection: AsyncConnection)
@@ -36,13 +37,17 @@ class AsyncRouter
         
         self.transportToTargetTask = Task
         {
-            await self.transferTransportToTarget(transportConnection: transportConnection, targetConnection: targetConnection)
+            await self.transferTransportToTarget()
+        }
+
+        self.targetToBatchBuffer = Task
+        {
+            await self.transferTargetToBatchBuffer()
         }
         
-
-        self.targetToTransportTask = Task
+        self.batchBufferToTransportTask = Task
         {
-            await self.transferTargetToTransport(transportConnection: transportConnection, targetConnection: targetConnection)
+            await self.transferBatchBufferToTransport()
         }
         
         Task
@@ -52,17 +57,17 @@ class AsyncRouter
 
     }
     
-    func transferTargetToTransport(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
+    func transferTargetToBatchBuffer() async
     {
-        appLog.debug("💙 Target to Transport started")
+        appLog.debug("💙 Target to Buffer started")
         let maxBatchSize =  250 // bytes
         let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
-        let batchBuffer = UnsafeStraw()
+        
         var lastPacketSentTime = Date() // now
 
         while keepGoing
         {
-            appLog.debug("💙 Target to Transport: Attempting to read from the target connection...")
+            appLog.debug("💙 Target to Buffer: Attempting to read from the target connection...")
             do
             {
                 let dataFromTarget = try await targetConnection.readMinMaxSize(1, maxReadSize)
@@ -72,41 +77,9 @@ class AsyncRouter
                     appLog.debug("\nAsyncRouter - Read 0 bytes from the target connection.")
                     continue
                 }
-                appLog.debug("💙 Target to Transport: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
+                appLog.debug("💙 Target to Buffer: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
                 batchBuffer.write(dataFromTarget)
-                
-                let dataToSend: Data
-                
-                if batchBuffer.count >= maxBatchSize
-                {
-                    // If we have enough data, send it
-                    dataToSend = try batchBuffer.read()
-                }
-                else if lastPacketSentTime.timeIntervalSinceNow >= timeoutDuration
-                {
-                    // If we spent enough time waiting send what we have
-                    dataToSend = try batchBuffer.read()
-                }
-                else
-                {
-                    // Otherwise keep reading
-                    continue
-                }
-                
-                do
-                {
-                    try await transportConnection.write(dataToSend)
-                    lastPacketSentTime = Date()
-                }
-                catch (let writeError)
-                {
-                    appLog.debug("ShapeshifterDispatcherSwift: transferTargetToTransport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
-                    keepGoing = false
-                    break
-                }
-                
-                appLog.debug("💙 Target to Transport: Wrote \(dataFromTarget.count) bytes to the transport connection.\n")
             }
             catch (let readError)
             {
@@ -121,7 +94,71 @@ class AsyncRouter
         self.lock.signal()
     }
     
-    func transferTransportToTarget(transportConnection: AsyncConnection, targetConnection: AsyncConnection) async
+    func transferBatchBufferToTransport() async
+    {
+        appLog.debug("💙 Buffer to Target started")
+        let maxBatchSize =  250 // bytes
+        let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
+        
+        var lastPacketSentTime = Date() // now
+
+        while keepGoing
+        {
+            appLog.debug("💙 Buffer to Target: Attempting to read from the target connection...")
+            do
+            {
+                let dataToSend: Data
+                
+                if batchBuffer.count >= maxBatchSize
+                {
+                    // If we have enough data, send it
+                    dataToSend = try batchBuffer.read()
+                }
+                else if lastPacketSentTime.timeIntervalSinceNow >= timeoutDuration
+                {
+                    // If we spent enough time waiting send what we have
+                    guard batchBuffer.count > 0 else
+                    {
+                        continue
+                    }
+                    
+                    dataToSend = try batchBuffer.read()
+                }
+                else
+                {
+                    // Otherwise take a break and then keep reading
+                    try await Task.sleep(for: .milliseconds(10)) // 10 milliseconds
+                    continue
+                }
+                
+                do
+                {
+                    try await transportConnection.write(dataToSend)
+                    lastPacketSentTime = Date()
+                }
+                catch (let writeError)
+                {
+                    appLog.debug("💙‼️ Buffer to Target: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
+                    keepGoing = false
+                    break
+                }
+                
+                appLog.debug("💙 Buffer to Target: Wrote \(dataToSend.count) bytes to the transport connection.\n")
+            }
+            catch (let readError)
+            {
+                appLog.debug("💙‼️ Buffer to Target. Error reading from the batch buffer: \(readError).\n")
+                keepGoing = false
+                break
+            }
+            
+            await Task.yield() // Take turns
+        }
+        
+        self.lock.signal()
+    }
+    
+    func transferTransportToTarget() async
     {
         appLog.debug("💜 Transport to Target started")
         
@@ -184,7 +221,7 @@ class AsyncRouter
             }
             
             self.controller.remove(route: self)
-            self.targetToTransportTask?.cancel()
+            self.targetToBatchBuffer?.cancel()
             self.transportToTargetTask?.cancel()
             appLog.debug("Route clean up finished.")
         }
