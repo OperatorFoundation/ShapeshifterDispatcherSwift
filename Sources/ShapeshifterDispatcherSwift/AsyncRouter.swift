@@ -107,17 +107,14 @@ class AsyncRouter
             do
             {
                 let dataToSend: Data
-                
-                appLog.debug("🩵 Buffer to Transport checking if buffer count >= \(maxBatchSize).\n")
                 let currentBufferSize = batchBuffer.count()
-                print("🩵 Buffer to Transport buffer size is \(currentBufferSize) bytes.")
                 
-                print("🩵 Buffer to Transport starting the loop again. Last packet sent: \(lastPacketSentTime.timeIntervalSinceNow) seconds ago. Timeout duration: \(timeoutDuration)")
-                
+                print("🩵 Buffer to Transport buffer size is \(currentBufferSize) bytes, checking if buffer count >= \(maxBatchSize).")
+                                
                 if  currentBufferSize >= maxBatchSize
                 {
                     // If we have enough data, send it
-                    appLog.debug("🩵 Buffer to Transport: read() called.\n")
+//                    appLog.debug("🩵 Buffer to Transport: read() called.\n")
                     dataToSend = try batchBuffer.read()
                     appLog.debug("🩵 Buffer to Transport: read \(dataToSend.count) bytes.\n")
                 }
@@ -130,7 +127,7 @@ class AsyncRouter
                         continue
                     }
                     
-                    appLog.debug("🩵 Buffer to Transport: Timeout!! read() called.\n")
+//                    appLog.debug("🩵 Buffer to Transport: Timeout!! read() called.\n")
                     dataToSend = try batchBuffer.read()
                     appLog.debug("🩵 Buffer to Transport: Timeout!! read \(dataToSend.count) bytes.\n")
                 }
