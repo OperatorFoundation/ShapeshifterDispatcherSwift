@@ -128,12 +128,22 @@ class AsyncRouter
                 if batchReady
                 {
                     print("🩵 Buffer to Transport buffer size is \(batchBuffer.count()) bytes.")
-                    let bufferData = try? batchBuffer.read()
-                    print("🩵 Buffer to Transport buffer read \(bufferData!.count) bytes from the buffer")
-                    try? await transportConnection.write(bufferData!)
-                    print("🩵 Buffer to Transport buffer wrote \(bufferData!.count) bytes to the transport connection")
-                    lastPacketSentTime = Date()
-                    timeToSleep = 1
+                    let bufferData = batchBuffer.read()
+                    print("🩵 Buffer to Transport buffer read \(bufferData.count) bytes from the buffer")
+                    
+                    do
+                    {
+                        try await transportConnection.write(bufferData)
+                        print("🩵 Buffer to Transport buffer wrote \(bufferData.count) bytes to the transport connection")
+                        lastPacketSentTime = Date()
+                        timeToSleep = 1
+                    }
+                    catch (let writeError)
+                    {
+                        appLog.debug("🩵‼️ Buffer to Transport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
+                        keepGoing = false
+                        break
+                    }
                 }
             }
             else
@@ -144,71 +154,6 @@ class AsyncRouter
                     timeToSleep = timeToSleep * 2
                 }
             }
-                        
-            await Task.yield()
-            
-//            print("🩵 Buffer to Transport buffer read \(dataToSend.count ?? 0) bytes from the buffer")
-//            do
-//            {
-//                let dataToSend: Data
-//                let currentBufferSize = batchBuffer.count()
-//                
-//                print("🩵 Buffer to Transport buffer size is \(currentBufferSize) bytes, checking if buffer count >= \(maxBatchSize).")
-//                                
-//                if  currentBufferSize >= maxBatchSize
-//                {
-//                    // If we have enough data, send it
-////                    appLog.debug("🩵 Buffer to Transport: read() called.\n")
-//                    dataToSend = try batchBuffer.read()
-//                    appLog.debug("🩵 Buffer to Transport: read \(dataToSend.count) bytes.\n")
-//                }
-//                else if Date().timeIntervalSince1970 - lastPacketSentTime.timeIntervalSince1970 >= timeoutDuration
-//                {
-//                    // If we spent enough time waiting send what we have
-//                    guard batchBuffer.count() > 0 else
-//                    {
-//                        continue
-//                    }
-//                    
-////                    appLog.debug("🩵 Buffer to Transport: Timeout!! read() called.\n")
-//                    dataToSend = try batchBuffer.read()
-//                    appLog.debug("🩵 Buffer to Transport: Timeout!! read \(dataToSend.count) bytes from the buffer.\n")
-//                }
-//                else
-//                {
-//                    // Otherwise take a break and then keep reading
-//                    try await Task.sleep(for: .milliseconds(timeToSleep))
-//                    
-//                    if timeToSleep < 1000
-//                    {
-//                        timeToSleep = timeToSleep * 2
-//                    }
-//                    
-//                    continue
-//                }
-//                
-//                do
-//                {
-//                    try await transportConnection.write(dataToSend)
-//                    appLog.debug("🩵 Buffer to Transport: Wrote \(dataToSend.count) bytes to the transport connection.\n")
-//                    lastPacketSentTime = Date()
-//                    timeToSleep = 1
-//                }
-//                catch (let writeError)
-//                {
-//                    appLog.debug("🩵‼️ Buffer to Transport: Unable to send target data to the transport connection. The connection was likely closed. Error: \(writeError)")
-//                    keepGoing = false
-//                    break
-//                }
-//                
-//                appLog.debug("🩵 Buffer to Transport done.\n")
-//            }
-//            catch (let readError)
-//            {
-//                appLog.debug("🩵‼️ Buffer to Transport. Error reading from the batch buffer: \(readError).\n")
-//                keepGoing = false
-//                break
-//            }
             
             await Task.yield() // Take turns
         }
