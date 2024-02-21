@@ -91,21 +91,15 @@ class AsyncRouter
     func transferBatchBufferToTransport() async
     {
         appLog.debug("🩵 Buffer to Transport started")
+        
+        
+        let maxBatchSize =  250 // bytes
+        let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
+        var timeToSleep = 1 // In milliseconds
+        var lastPacketSentTime = Date() // now
+
         while keepGoing
         {
-            try? await Task.sleep(for: .milliseconds(1000))
-            
-            await Task.yield()
-        }
-        
-        
-//        let maxBatchSize =  250 // bytes
-//        let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
-//        var timeToSleep = 1 // In milliseconds
-//        var lastPacketSentTime = Date() // now
-//
-//        while keepGoing
-//        {
 //            do
 //            {
 //                let dataToSend: Data
@@ -167,11 +161,11 @@ class AsyncRouter
 //                keepGoing = false
 //                break
 //            }
-//            
-//            await Task.yield() // Take turns
-//        }
-//        
-//        self.lock.signal()
+            
+            await Task.yield() // Take turns
+        }
+        
+        self.lock.signal()
     }
     
     func transferTransportToTarget() async
