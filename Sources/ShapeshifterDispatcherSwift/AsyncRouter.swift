@@ -137,7 +137,7 @@ class AsyncRouter
                 else
                 {
                     // Otherwise take a break and then keep reading
-                    try await Task.sleep(for: .milliseconds(10)) // 10 milliseconds
+                    try await Task.sleep(for: .milliseconds(100)) // 10 milliseconds
                     continue
                 }
                 
