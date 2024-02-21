@@ -133,10 +133,18 @@ class AsyncRouter
                     try? await transportConnection.write(bufferData!)
                     print("🩵 Buffer to Transport buffer wrote \(bufferData!.count) bytes to the transport connection")
                     lastPacketSentTime = Date()
+                    timeToSleep = 1
                 }
             }
-            
-            try? await Task.sleep(for: .milliseconds(timeToSleep))
+            else
+            {
+                try? await Task.sleep(for: .milliseconds(timeToSleep))
+                if timeToSleep < 1000
+                {
+                    timeToSleep = timeToSleep * 2
+                }
+            }
+                        
             await Task.yield()
             
 //            print("🩵 Buffer to Transport buffer read \(dataToSend.count ?? 0) bytes from the buffer")
