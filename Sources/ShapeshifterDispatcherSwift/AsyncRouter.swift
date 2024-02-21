@@ -105,6 +105,7 @@ class AsyncRouter
             if bufferData!.count > 0
             {
                 print("🩵 Buffer to Transport buffer read \(bufferData!.count) bytes from the buffer")
+                try? await transportConnection.write(bufferData!)
             }
             
             try? await Task.sleep(for: .milliseconds(timeToSleep))
