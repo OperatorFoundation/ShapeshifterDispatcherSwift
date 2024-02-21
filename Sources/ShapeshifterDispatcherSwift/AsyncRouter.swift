@@ -120,7 +120,6 @@ class AsyncRouter
                 }
                 else if Date().timeIntervalSince1970 - lastPacketSentTime.timeIntervalSince1970 >= timeoutDuration
                 {
-                    appLog.debug("🩵 Buffer to Transport: Timeout!! read() called.\n")
                     // If we spent enough time waiting send what we have
                     guard batchBuffer.count() > 0 else
                     {
@@ -129,7 +128,7 @@ class AsyncRouter
                     
 //                    appLog.debug("🩵 Buffer to Transport: Timeout!! read() called.\n")
                     dataToSend = try batchBuffer.read()
-                    appLog.debug("🩵 Buffer to Transport: Timeout!! read \(dataToSend.count) bytes.\n")
+                    appLog.debug("🩵 Buffer to Transport: Timeout!! read \(dataToSend.count) bytes from the buffer.\n")
                 }
                 else
                 {
