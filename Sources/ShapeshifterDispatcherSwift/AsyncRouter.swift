@@ -100,7 +100,13 @@ class AsyncRouter
 
         while keepGoing
         {
-            let _ = try? batchBuffer.read()
+            let bufferData = try? batchBuffer.read()
+            
+            if bufferData!.count > 0
+            {
+                print("🩵 Buffer to Transport buffer read \(bufferData!.count) bytes from the buffer")
+            }
+            
             try? await Task.sleep(for: .milliseconds(timeToSleep))
             await Task.yield()
             
