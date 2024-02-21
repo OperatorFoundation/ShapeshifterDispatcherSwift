@@ -17,7 +17,7 @@ class AsyncRouter
     
     let transportConnection: AsyncConnection
     let targetConnection: AsyncConnection
-    let batchBuffer = AsyncStraw()
+    let batchBuffer = SynchronizedStraw()
     let lock = DispatchSemaphore(value: 0)
     let controller: AsyncRoutingController
     let uuid = UUID()
