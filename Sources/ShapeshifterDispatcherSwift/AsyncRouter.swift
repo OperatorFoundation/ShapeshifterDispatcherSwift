@@ -59,12 +59,6 @@ class AsyncRouter
     
     func transferTargetToBatchBuffer() async
     {
-        appLog.debug("💙 Target to Buffer started")
-        let maxBatchSize =  250 // bytes
-        let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
-        
-        var lastPacketSentTime = Date() // now
-
         while keepGoing
         {
             appLog.debug("💙 Target to Buffer: Attempting to read from the target connection...")
@@ -99,7 +93,7 @@ class AsyncRouter
         appLog.debug("🩵 Buffer to Transport started")
         let maxBatchSize =  250 // bytes
         let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
-        
+        var timeToSleep = 1 // In milliseconds
         var lastPacketSentTime = Date() // now
 
         while keepGoing
@@ -133,7 +127,13 @@ class AsyncRouter
                 else
                 {
                     // Otherwise take a break and then keep reading
-                    try await Task.sleep(for: .milliseconds(100)) // 10 milliseconds
+                    try await Task.sleep(for: .milliseconds(timeToSleep))
+                    
+                    if timeToSleep < 1000
+                    {
+                        timeToSleep = timeToSleep * 2
+                    }
+                    
                     continue
                 }
                 
@@ -142,6 +142,7 @@ class AsyncRouter
                     try await transportConnection.write(dataToSend)
                     appLog.debug("🩵 Buffer to Transport: Wrote \(dataToSend.count) bytes to the transport connection.\n")
                     lastPacketSentTime = Date()
+                    timeToSleep = 1
                 }
                 catch (let writeError)
                 {
