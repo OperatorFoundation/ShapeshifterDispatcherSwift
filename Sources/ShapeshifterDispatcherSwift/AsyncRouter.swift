@@ -44,11 +44,11 @@ class AsyncRouter
         {
             await self.transferTargetToBatchBuffer()
         }
-        
-        self.batchBufferToTransportTask = Task
-        {
-            await self.transferBatchBufferToTransport()
-        }
+//        
+//        self.batchBufferToTransportTask = Task
+//        {
+//            await self.transferBatchBufferToTransport()
+//        }
         
         Task
         {
