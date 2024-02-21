@@ -79,7 +79,7 @@ class AsyncRouter
                 }
                 appLog.debug("💙 Target to Buffer: AsyncRouter - Read \(dataFromTarget.count) bytes from the target connection.")
                 
-                await batchBuffer.write(dataFromTarget)
+                batchBuffer.write(dataFromTarget)
             }
             catch (let readError)
             {
@@ -108,24 +108,24 @@ class AsyncRouter
             {
                 let dataToSend: Data
                 
-                if await batchBuffer.count() >= maxBatchSize
+                if batchBuffer.count() >= maxBatchSize
                 {
                     // If we have enough data, send it
                     appLog.debug("💙 Buffer to Transport: read() called.\n")
-                    dataToSend = try await batchBuffer.read()
+                    dataToSend = try batchBuffer.read()
                     appLog.debug("💙 Buffer to Transport: read \(dataToSend.count) bytes.\n")
                 }
                 else if lastPacketSentTime.timeIntervalSinceNow >= timeoutDuration
                 {
                     appLog.debug("💙 Buffer to Transport: Timeout!! read() called.\n")
                     // If we spent enough time waiting send what we have
-                    guard await batchBuffer.count() > 0 else
+                    guard batchBuffer.count() > 0 else
                     {
                         continue
                     }
                     
                     appLog.debug("💙 Buffer to Transport: Timeout!! read() called.\n")
-                    dataToSend = try await batchBuffer.read()
+                    dataToSend = try batchBuffer.read()
                     appLog.debug("💙 Buffer to Transport: Timeout!! read \(dataToSend.count) bytes.\n")
                 }
                 else
@@ -227,6 +227,7 @@ class AsyncRouter
             
             self.controller.remove(route: self)
             self.targetToBatchBuffer?.cancel()
+            self.batchBufferToTransportTask?.cancel()
             self.transportToTargetTask?.cancel()
             appLog.debug("Route clean up finished.")
         }
