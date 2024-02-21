@@ -100,10 +100,12 @@ class AsyncRouter
 
         while keepGoing
         {
-            let bufferData = try? batchBuffer.read()
-            
-            if bufferData!.count > 0
+            let bufferSize = batchBuffer.count()
+
+            if bufferSize > 0
             {
+                print("🩵 Buffer to Transport buffer size is \(batchBuffer.count()) bytes.")
+                let bufferData = try? batchBuffer.read()
                 print("🩵 Buffer to Transport buffer read \(bufferData!.count) bytes from the buffer")
                 try? await transportConnection.write(bufferData!)
                 print("🩵 Buffer to Transport buffer wrote \(bufferData!.count) bytes to the transport connection")
