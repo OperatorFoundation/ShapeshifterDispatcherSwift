@@ -104,11 +104,36 @@ class AsyncRouter
 
             if bufferSize > 0
             {
-                print("🩵 Buffer to Transport buffer size is \(batchBuffer.count()) bytes.")
-                let bufferData = try? batchBuffer.read()
-                print("🩵 Buffer to Transport buffer read \(bufferData!.count) bytes from the buffer")
-                try? await transportConnection.write(bufferData!)
-                print("🩵 Buffer to Transport buffer wrote \(bufferData!.count) bytes to the transport connection")
+                var batchReady = false
+                
+                if bufferSize >= maxBatchSize
+                {
+                    batchReady = true
+                }
+                else
+                {
+                    print("🩵 Buffer to Transport buffer: 🍪‼️ Our batch is not big enough \(bufferSize) bytes in buffer, but we need \(maxBatchSize) bytes.")
+                }
+                
+                let timeElapsed = Date().timeIntervalSince1970 - lastPacketSentTime.timeIntervalSince1970
+                if  timeElapsed >= timeoutDuration
+                {
+                    batchReady = true
+                }
+                else
+                {
+                    print("🩵 Buffer to Transport buffer: 🍪‼️ The time elapsed \(timeElapsed) is not more than the timeout duration of \(timeoutDuration)")
+                }
+                
+                if batchReady
+                {
+                    print("🩵 Buffer to Transport buffer size is \(batchBuffer.count()) bytes.")
+                    let bufferData = try? batchBuffer.read()
+                    print("🩵 Buffer to Transport buffer read \(bufferData!.count) bytes from the buffer")
+                    try? await transportConnection.write(bufferData!)
+                    print("🩵 Buffer to Transport buffer wrote \(bufferData!.count) bytes to the transport connection")
+                    lastPacketSentTime = Date()
+                }
             }
             
             try? await Task.sleep(for: .milliseconds(timeToSleep))
