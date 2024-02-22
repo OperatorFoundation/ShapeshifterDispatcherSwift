@@ -110,20 +110,20 @@ class AsyncRouter
                 {
                     batchReady = true
                 }
-                else
-                {
-                    print("🩵 Buffer to Transport buffer: 🍪‼️ Our batch is not big enough \(bufferSize) bytes in buffer, but we need \(maxBatchSize) bytes.")
-                }
+//                else
+//                {
+//                    print("🩵 Buffer to Transport buffer: 🍪‼️ Our batch is not big enough \(bufferSize) bytes in buffer, but we need \(maxBatchSize) bytes.")
+//                }
                 
                 let timeElapsed = Date().timeIntervalSince1970 - lastPacketSentTime.timeIntervalSince1970
                 if  timeElapsed >= timeoutDuration
                 {
                     batchReady = true
                 }
-                else
-                {
-                    print("🩵 Buffer to Transport buffer: 🍪‼️ The time elapsed \(timeElapsed) is not more than the timeout duration of \(timeoutDuration)")
-                }
+//                else
+//                {
+//                    print("🩵 Buffer to Transport buffer: 🍪‼️ The time elapsed \(timeElapsed) is not more than the timeout duration of \(timeoutDuration)")
+//                }
                 
                 if batchReady
                 {
