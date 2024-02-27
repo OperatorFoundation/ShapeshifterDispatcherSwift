@@ -23,6 +23,12 @@ class AsyncRoutingController
             
             do
             {
+                defer
+                {
+                    // Pause between accepting connections to throttle potential spamming
+                    Thread.sleep(forTimeInterval: 0.1) // 100 milliseconds in seconds
+                }
+                
                 let transportConnection = try AsyncAwaitThrowingSynchronizer<AsyncConnection>.sync
                 {
                     let connection = try await listener.accept()
@@ -58,6 +64,7 @@ class AsyncRoutingController
                 appLog.error("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: \(error)")
                 return
             }
+            
         }
     }
     

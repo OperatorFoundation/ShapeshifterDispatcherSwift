@@ -21,6 +21,8 @@ class RoutingController
             do
             {
                 let transportConnection = try listener.accept()
+                // Pause between accepting connections to throttle potential spamming
+                Thread.sleep(forTimeInterval: 0.1) // 100 milliseconds in seconds
                 
                 appLog.debug("ShapeshifterDispatcherSwift: listener accepted a transport connection.")
                                 
