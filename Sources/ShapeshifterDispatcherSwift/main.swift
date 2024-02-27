@@ -12,7 +12,7 @@ import Logging
 import ShadowSwift
 
 let supportedPTVersion = "3.0"
-let logLevel: Logger.Level = .debug
+let logLevel: Logger.Level = .error
 var appLog = Logger(label: "ShapeshifterDispatcherSwift")
 
 // TODO: Refactor to use the exact arguments that dispatcher needs according to the spec
