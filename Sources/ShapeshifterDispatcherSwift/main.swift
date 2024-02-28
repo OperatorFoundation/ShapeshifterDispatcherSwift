@@ -12,7 +12,7 @@ import Logging
 import ShadowSwift
 
 let supportedPTVersion = "3.0"
-let logLevel: Logger.Level = .debug
+var logLevel: Logger.Level = .error
 var appLog = Logger(label: "ShapeshifterDispatcherSwift")
 
 // TODO: Refactor to use the exact arguments that dispatcher needs according to the spec
@@ -58,6 +58,9 @@ struct ShapeshifterDispatcher: ParsableCommand
     @Flag(name: .customLong("exit-on-stdin-close", withSingleDash: true), help: "Specifies that the parent process will close the PT proxy's standard input (stdin) stream to indicate that the PT proxy should gracefully exit.")
     var exitOnStdinClose = false
     
+    @Flag(help: "Whether or not to show logs.")
+    var verbose = false
+
     // TODO: ipcLogLevel
     /**
      -ipcLogLevel
@@ -351,6 +354,11 @@ struct ShapeshifterDispatcher: ParsableCommand
     {
         LoggingSystem.bootstrap(StreamLogHandler.standardError)
         appLog.logLevel = logLevel
+        
+        if verbose == true
+        {
+            appLog.logLevel = .debug
+        }
                 
         switch (transport)
         {
