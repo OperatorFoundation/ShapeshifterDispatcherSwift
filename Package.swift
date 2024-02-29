@@ -17,7 +17,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift", from: "2.0.1"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift", from: "5.0.2"),
         .package(url: "https://github.com/OperatorFoundation/Starbridge", from: "1.2.0"),
-        .package(url: "https://github.com/OperatorFoundation/Straw", from: "1.0.1"),
+        .package(url: "https://github.com/OperatorFoundation/Straw", from: "1.0.3"),
         .package(url: "https://github.com/OperatorFoundation/Transmission", from: "1.2.11"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionAsync", from: "0.1.4"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionAsyncNametag", from: "1.0.0")
