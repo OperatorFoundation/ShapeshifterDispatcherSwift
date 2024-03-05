@@ -30,17 +30,12 @@ struct StarbridgeController
             return
         }
                         
-        let starbridge = Starbridge(logger: appLog)
-        
-        guard let starbridgeListener = try? starbridge.listen(config: starbridgeConfig) else
-        {
-            appLog.error("Failed to create a Starbridge listener.")
-            return
-        }
+        let starbridge = AsyncStarbridge(logger: appLog)
+        let starbridgeListener = try starbridge.listen(config: starbridgeConfig)
+        let routingController = AsyncRoutingController()
                
         print("Starbridge server is now listening at \(starbridgeConfig.serverIP) on port \(starbridgeConfig.serverPort)...")
         
-        let routingController = RoutingController()
         routingController.handleListener(listener: starbridgeListener, targetHost: targetHost, targetPort: targetPort)
     }
 }
