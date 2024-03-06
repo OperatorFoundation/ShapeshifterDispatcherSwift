@@ -8,6 +8,7 @@
 import Foundation
 
 import Chord
+import ShadowSwift
 import Straw
 import TransmissionAsync
 
@@ -92,7 +93,6 @@ class AsyncRouter
     {
         appLog.debug("🩵 Buffer to Transport started")
         
-        
         let maxBatchSize =  250 // bytes
         let timeoutDuration: TimeInterval = 250 / 1000 // 250 milliseconds in seconds
         var timeToSleep = 1 // In milliseconds
@@ -110,31 +110,39 @@ class AsyncRouter
                 {
                     batchReady = true
                 }
-//                else
-//                {
-//                    print("🩵 Buffer to Transport buffer: 🍪‼️ Our batch is not big enough \(bufferSize) bytes in buffer, but we need \(maxBatchSize) bytes.")
-//                }
                 
                 let timeElapsed = Date().timeIntervalSince1970 - lastPacketSentTime.timeIntervalSince1970
                 if  timeElapsed >= timeoutDuration
                 {
                     batchReady = true
                 }
-//                else
-//                {
-//                    print("🩵 Buffer to Transport buffer: 🍪‼️ The time elapsed \(timeElapsed) is not more than the timeout duration of \(timeoutDuration)")
-//                }
+
                 
                 if batchReady
                 {
-                    print("🩵 Buffer to Transport buffer size is \(batchBuffer.count()) bytes.")
+                    appLog.debug("🩵 Buffer to Transport buffer size is \(batchBuffer.count()) bytes.")
                     let bufferData = batchBuffer.read()
-                    print("🩵 Buffer to Transport buffer read \(bufferData.count) bytes from the buffer")
+                    appLog.debug("🩵 Buffer to Transport buffer read \(bufferData.count) bytes from the buffer")
                     
                     do
                     {
-                        try await transportConnection.write(bufferData)
-                        print("🩵 Buffer to Transport buffer wrote \(bufferData.count) bytes to the transport connection")
+                        if bufferData.count > AsyncDarkstarCipher.maxPayloadSize
+                        {
+                            let chunkBuffer = UnsafeStraw()
+                            chunkBuffer.write(bufferData)
+                            
+                            while chunkBuffer.count > 0
+                            {
+                                let dataToSend = try chunkBuffer.read(maxSize: AsyncDarkstarCipher.maxPayloadSize)
+                                try await transportConnection.write(dataToSend)
+                            }
+                        }
+                        else
+                        {
+                            try await transportConnection.write(bufferData)
+                        }
+                        
+                        appLog.debug("🩵 Buffer to Transport buffer wrote \(bufferData.count) bytes to the transport connection")
                         lastPacketSentTime = Date()
                         timeToSleep = 1
                     }
