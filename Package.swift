@@ -44,6 +44,7 @@ let package = Package(
             dependencies: [
                 "Dandelion",
                 "Gardener",
+                "Omni",
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
