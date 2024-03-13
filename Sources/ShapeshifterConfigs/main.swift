@@ -11,6 +11,7 @@ import Logging
 
 import Dandelion
 import Gardener
+import Omni
 import ReplicantSwift
 import ShadowSwift
 import Starbridge
@@ -22,6 +23,7 @@ struct ShapeshifterConfig: ParsableCommand
         subcommands: [ShadowConfigGenerator.self,
                       StarbridgeConfigGenerator.self,
                       ReplicantConfigGenerator.self,
+                      OmniConfigGenerator.self,
                       DandelionConfigGenerator.self])
     
     struct Options: ParsableArguments
@@ -167,6 +169,25 @@ extension ShapeshifterConfig
             try DandelionConfig.generateNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", keychainURL: keychainDirectoryURL, keychainLabel: keychainLabel, overwriteKey: overwrite)
 
             print("New Dandelion config files have been saved to \(saveURL)")
+        }
+    }
+}
+
+// MARK: Omni
+extension ShapeshifterConfig
+{
+    struct OmniConfigGenerator: ParsableCommand
+    {
+        static let configuration = CommandConfiguration(commandName: "omni", abstract: "Generate new config files for the Omni transport.")
+        
+        @OptionGroup() var parentOptions: Options
+        
+        func run() throws
+        {
+             print("Generating Omni configuration files...")
+            
+            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
+            try OmniConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
         }
     }
 }
