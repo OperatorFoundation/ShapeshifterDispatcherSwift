@@ -14,7 +14,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Dandelion", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Gardener", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Nametag", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/Omni.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Omni", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Starbridge", branch: "main"),
