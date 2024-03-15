@@ -30,7 +30,7 @@ struct StarbridgeController
             return
         }
                         
-        let starbridge = AsyncStarbridge(logger: appLog)
+        let starbridge = Starbridge(logger: appLog)
         let starbridgeListener = try starbridge.listen(config: starbridgeConfig)
         let routingController = AsyncRoutingController()
                

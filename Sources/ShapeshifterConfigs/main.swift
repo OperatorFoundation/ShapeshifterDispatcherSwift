@@ -22,7 +22,6 @@ struct ShapeshifterConfig: ParsableCommand
         abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher",
         subcommands: [ShadowConfigGenerator.self,
                       StarbridgeConfigGenerator.self,
-                      ReplicantConfigGenerator.self,
                       OmniConfigGenerator.self,
                       DandelionConfigGenerator.self])
     
@@ -119,34 +118,6 @@ extension ShapeshifterConfig
     }
 }
 
-// MARK: Replicant
-extension ShapeshifterConfig
-{
-    struct ReplicantConfigGenerator: ParsableCommand
-    {
-        static let configuration = CommandConfiguration(commandName: "replicant", abstract: "Generate new config files for the Replicant transport.")
-        
-        @OptionGroup() var parentOptions: Options
-        
-        func run() throws
-        {
-            print("Generating Replicant configuration files...")
-            
-            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            let success = ReplicantSwift.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", polish: parentOptions.polish, toneburst: parentOptions.toneburst)
-            
-            if success
-            {
-                print("New Starbridge config files have been saved to \(saveURL)")
-            }
-            else
-            {
-                print("Failed to generate the requested Starbridge config files.")
-            }
-        }
-    }
-}
-
 // MARK: Dandelion
 extension ShapeshifterConfig
 {
@@ -187,7 +158,7 @@ extension ShapeshifterConfig
              print("Generating Omni configuration files...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            try OmniConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
+            try createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
         }
     }
 }
