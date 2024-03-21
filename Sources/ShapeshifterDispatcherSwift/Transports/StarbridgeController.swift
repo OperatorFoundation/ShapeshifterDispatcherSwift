@@ -24,12 +24,7 @@ struct StarbridgeController
     
     func runServer() throws
     {
-        guard let starbridgeConfig = StarbridgeServerConfig(withConfigAtPath: configPath) else
-        {
-            appLog.error("Failed to launch a Starbridge Server, we were unable to parse the config at the provided path.")
-            return
-        }
-                        
+        let starbridgeConfig = try StarbridgeServerConfig(path: configPath)
         let starbridge = Starbridge(logger: appLog)
         let starbridgeListener = try starbridge.listen(config: starbridgeConfig)
         let routingController = AsyncRoutingController()
