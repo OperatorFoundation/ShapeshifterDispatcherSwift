@@ -158,7 +158,7 @@ extension ShapeshifterConfig
              print("Generating Omni configuration files...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            try createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
+            try OmniConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
         }
     }
 }
