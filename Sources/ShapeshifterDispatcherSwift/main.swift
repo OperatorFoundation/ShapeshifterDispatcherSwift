@@ -90,7 +90,7 @@ struct ShapeshifterDispatcher: ParsableCommand
      shapeshifter-dispatcher -transport shadow
      */
     enum TransportType: String, CaseIterable, ExpressibleByArgument {
-           case dandelion, replicant, shadow, starbridge
+           case dandelion, omni, shadow, starbridge
     }
     @Option(name: .customLong("transport", withSingleDash: true), help: "Specifies the name of the PT to use.")
     var transport: TransportType
@@ -380,24 +380,6 @@ struct ShapeshifterDispatcher: ParsableCommand
                     return
                 }
                 
-            case .replicant:
-                let replicantController = ReplicantController(
-                    configPath: optionsDir,
-                    targetHost: targetHost,
-                    targetPort: targetPort,
-                    bindHost: bindHost,
-                    bindPort: bindPort)
-                
-                if serverMode
-                {
-                    try replicantController.runServer()
-                }
-                else
-                {
-                    appLog.error("Currently only server mode is supported for the Replicant transport.")
-                    return
-                }
-                
             case .shadow:
                 let shadowController = ShadowController(
                     configPath: optionsDir,
@@ -427,6 +409,22 @@ struct ShapeshifterDispatcher: ParsableCommand
                 if serverMode
                 {
                     try starbridgeController.runServer()
+                }
+                else
+                {
+                    appLog.error("Currently only server mode is supported for the Starbridge transport.")
+                    return
+                }
+            case .omni:
+                let omniController = OmniController(
+                    configPath: optionsDir,
+                    targetHost: targetHost,
+                    targetPort: targetPort,
+                    bindHost: bindHost,
+                    bindPort: bindPort)
+                if serverMode
+                {
+                    try omniController.runServer()
                 }
                 else
                 {

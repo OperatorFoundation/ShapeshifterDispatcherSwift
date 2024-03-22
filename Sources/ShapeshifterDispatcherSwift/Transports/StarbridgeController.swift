@@ -24,23 +24,13 @@ struct StarbridgeController
     
     func runServer() throws
     {
-        guard let starbridgeConfig = StarbridgeServerConfig(withConfigAtPath: configPath) else
-        {
-            appLog.error("Failed to launch a Starbridge Server, we were unable to parse the config at the provided path.")
-            return
-        }
-                        
+        let starbridgeConfig = try StarbridgeServerConfig(path: configPath)
         let starbridge = Starbridge(logger: appLog)
-        
-        guard let starbridgeListener = try? starbridge.listen(config: starbridgeConfig) else
-        {
-            appLog.error("Failed to create a Starbridge listener.")
-            return
-        }
+        let starbridgeListener = try starbridge.listen(config: starbridgeConfig)
+        let routingController = AsyncRoutingController()
                
         print("Starbridge server is now listening at \(starbridgeConfig.serverIP) on port \(starbridgeConfig.serverPort)...")
         
-        let routingController = RoutingController()
         routingController.handleListener(listener: starbridgeListener, targetHost: targetHost, targetPort: targetPort)
     }
 }

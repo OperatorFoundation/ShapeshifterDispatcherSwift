@@ -11,6 +11,7 @@ import Logging
 
 import Dandelion
 import Gardener
+import Omni
 import ReplicantSwift
 import ShadowSwift
 import Starbridge
@@ -21,7 +22,7 @@ struct ShapeshifterConfig: ParsableCommand
         abstract: "Generate new config files for various transports supported by ShapeshifterDispatcher",
         subcommands: [ShadowConfigGenerator.self,
                       StarbridgeConfigGenerator.self,
-                      ReplicantConfigGenerator.self,
+                      OmniConfigGenerator.self,
                       DandelionConfigGenerator.self])
     
     struct Options: ParsableArguments
@@ -103,44 +104,7 @@ extension ShapeshifterConfig
              print("Generating Starbridge configuration files...")
             
             let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            let success = try Starbridge.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
-    
-            if success
-            {
-                print("New Starbridge config files have been saved to \(saveURL)")
-            }
-            else
-            {
-                print("Failed to generate the requested Starbridge config files.")
-            }
-        }
-    }
-}
-
-// MARK: Replicant
-extension ShapeshifterConfig
-{
-    struct ReplicantConfigGenerator: ParsableCommand
-    {
-        static let configuration = CommandConfiguration(commandName: "replicant", abstract: "Generate new config files for the Replicant transport.")
-        
-        @OptionGroup() var parentOptions: Options
-        
-        func run() throws
-        {
-            print("Generating Replicant configuration files...")
-            
-            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
-            let success = ReplicantSwift.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", polish: parentOptions.polish, toneburst: parentOptions.toneburst)
-            
-            if success
-            {
-                print("New Starbridge config files have been saved to \(saveURL)")
-            }
-            else
-            {
-                print("Failed to generate the requested Starbridge config files.")
-            }
+            try StarbridgeConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
         }
     }
 }
@@ -167,6 +131,25 @@ extension ShapeshifterConfig
             try DandelionConfig.generateNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)", keychainURL: keychainDirectoryURL, keychainLabel: keychainLabel, overwriteKey: overwrite)
 
             print("New Dandelion config files have been saved to \(saveURL)")
+        }
+    }
+}
+
+// MARK: Omni
+extension ShapeshifterConfig
+{
+    struct OmniConfigGenerator: ParsableCommand
+    {
+        static let configuration = CommandConfiguration(commandName: "omni", abstract: "Generate new config files for the Omni transport.")
+        
+        @OptionGroup() var parentOptions: Options
+        
+        func run() throws
+        {
+             print("Generating Omni configuration files...")
+            
+            let saveURL = URL(fileURLWithPath: parentOptions.directory, isDirectory: true)
+            try OmniConfig.createNewConfigFiles(inDirectory: saveURL, serverAddress: "\(parentOptions.host):\(parentOptions.port)")
         }
     }
 }

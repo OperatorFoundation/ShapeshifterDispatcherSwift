@@ -10,10 +10,11 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.3"),
-        .package(url: "https://github.com/OperatorFoundation/Chord", from: "0.1.4"),
+        .package(url: "https://github.com/OperatorFoundation/Chord", from: "0.1.5"),
         .package(url: "https://github.com/OperatorFoundation/Dandelion", from: "0.1.0"),
         .package(url: "https://github.com/OperatorFoundation/Gardener", from: "0.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Nametag", from: "0.1.2"),
+        .package(url: "https://github.com/OperatorFoundation/Omni", from: "1.0.0"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift", from: "2.0.1"),
         .package(url: "https://github.com/OperatorFoundation/ShadowSwift", from: "5.0.2"),
         .package(url: "https://github.com/OperatorFoundation/Starbridge", from: "1.2.0"),
@@ -29,6 +30,7 @@ let package = Package(
                 "Chord",
                 "Nametag",
                 "ReplicantSwift",
+                "Omni",
                 "ShadowSwift",
                 "Starbridge",
                 "Straw",
@@ -42,6 +44,7 @@ let package = Package(
             dependencies: [
                 "Dandelion",
                 "Gardener",
+                "Omni",
                 "ReplicantSwift",
                 "ShadowSwift",
                 "Starbridge",
