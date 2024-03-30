@@ -20,12 +20,7 @@ struct OmniController
     
     func runServer() throws
     {
-        guard let serverConfig = OmniConfig.ServerConfig(path: configPath) else
-        {
-            appLog.error("Failed to launch a Omni Server, we were unable to parse the config at the provided path.")
-            return
-        }
-                        
+        let serverConfig = try OmniServerConfig(path: configPath)
         let server = Omni(logger: appLog)
         let listener = try server.listen(config: serverConfig)
         let routingController = AsyncRoutingController()
