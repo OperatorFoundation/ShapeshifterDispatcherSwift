@@ -11,7 +11,7 @@ and Wireguard. This project, Shapeshifter Dispatcher for Swift, is one of severa
 
 A Swift implementation of Shapeshifter Dispatcher designed to run on Linux machines as a command line tool.
 
-Currently this implementation only supports running **Shadow** and **Starbridge** transports in *server* mode.
+Currently this implementation only supports running **Shadow**, **Starbridge**, **Omni**, and **Dandelion** transports in *server* mode.
 
 ## Running a Shadow Server
 
