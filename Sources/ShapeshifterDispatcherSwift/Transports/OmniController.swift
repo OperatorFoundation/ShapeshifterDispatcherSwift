@@ -20,7 +20,7 @@ struct OmniController
     
     func runServer() throws
     {
-        let serverConfig = try OmniServerConfig(path: configPath)
+        let serverConfig = try OmniServerConfig(path: configPath)                        
         let server = Omni(logger: appLog)
         let listener = try server.listen(config: serverConfig)
         let routingController = AsyncRoutingController()
