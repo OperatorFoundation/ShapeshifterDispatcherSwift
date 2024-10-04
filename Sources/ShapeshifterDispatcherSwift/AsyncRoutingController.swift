@@ -48,9 +48,7 @@ class AsyncRoutingController
                    }
                     catch (let targetConnectionError)
                     {
-                        appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server. Error: \(targetConnectionError)")
-                        try await listener.close()
-                        return
+                        appLog.warning("ShapeshifterDispatcher.handleListener: A client connection could not be accepted, we failed to connect to the application server. Reason: \(targetConnectionError)")
                     }
                 }
             }
