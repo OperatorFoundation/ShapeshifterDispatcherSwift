@@ -19,7 +19,7 @@ class AsyncRoutingController
     {
         while true
         {
-            appLog.debug("Async router listening for connections...")
+            appLog.debug("Listening for connections...")
             
             do
             {
@@ -32,7 +32,7 @@ class AsyncRoutingController
                 let transportConnection = try AsyncAwaitThrowingSynchronizer<AsyncConnection>.sync
                 {
                     let connection = try await listener.accept()
-                    appLog.debug("Accepted a transport connection.")
+                    appLog.debug("ShapeshifterDispatcher.handleListener: Accepted a transport connection.")
                     return connection
                 }
                 
@@ -41,14 +41,14 @@ class AsyncRoutingController
                    do
                    {
                        let targetConnection = try await AsyncTcpSocketConnection(targetHost, targetPort, appLog)
-                       appLog.debug("A target connection was created.")
+                       appLog.debug("ShapeshifterDispatcher.handleListener: Created a connection to the target host.")
                        let route = AsyncRouter(controller: self, transportConnection: transportConnection, targetConnection: targetConnection)
-                       appLog.debug("ShapeshifterDispatcherSwift: new route created.")
+                       appLog.debug("ShapeshifterDispatcher.handleListener: Created a new route.")
                        routes.append(route)
                    }
                     catch (let targetConnectionError)
                     {
-                        appLog.error("Failed to connect to the application server. Error: \(targetConnectionError)")
+                        appLog.error("ShapeshifterDispatcher.handleListener: Failed to connect to the application server. Error: \(targetConnectionError)")
                         try await listener.close()
                         return
                     }
@@ -56,13 +56,13 @@ class AsyncRoutingController
             }
             catch AsyncDarkstarServerError.blackHoled
             {
-                appLog.error("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: blackHoled")
+                appLog.warning("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: blackHoled")
                 continue
             }
             catch
             {
-                appLog.error("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: \(error)")
-                return
+                appLog.warning("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: \(error)")
+                continue
             }
             
         }
