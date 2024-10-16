@@ -57,12 +57,21 @@ class AsyncRoutingController
                 appLog.warning("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: blackHoled")
                 continue
             }
+            catch AsyncTcpSocketListenerError.socketError
+            {
+                appLog.error("Received a socket error while trying to accept a connection. This is a fatal error. Exiting...")
+                Task
+                {
+                    try await listener.close()
+                }
+                
+                return
+            }
             catch
             {
                 appLog.warning("ShapeshifterDispatcher.handleListener: Failed to accept a new connection: \(error)")
                 continue
             }
-            
         }
     }
     
